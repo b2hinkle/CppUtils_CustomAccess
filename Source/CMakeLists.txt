@@ -98,7 +98,8 @@ block(SCOPE_FOR VARIABLES)
   # List of all source files (relative to our "Source" directory).
   set(MyTargetSources
     "${MY_BASE_PROJECT_NAME_FULL}_Export.cpp"
-    "CppUtils_CustomAccessed.cpp"
+    "CppUtils_CustomAccessed/CustomAccessedBase.cpp"
+    "CppUtils_CustomAccessed/CustomAccessed.cpp"
     )
 
   # Add source file paths for `BUILD_LOCAL_INTERFACE` users.

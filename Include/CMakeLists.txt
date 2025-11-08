@@ -87,7 +87,8 @@ target_sources(${MY_BASE_PROJECT_NAME_FULL}_Include
       FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/Include/${MY_BASE_PROJECT_NAME_FULL}_Export.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/Include/${MY_BASE_PROJECT_NAME_FULL}_include_export.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccessed.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccessed/CustomAccessed.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccessed/CustomAccessedBase.h"
   )
 
 # Note that we do not "find package" for our parent project. We don't need to since we are built in the same
