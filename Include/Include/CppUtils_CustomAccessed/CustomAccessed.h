@@ -2,42 +2,38 @@
 
 #pragma once
 
+#include <CppUtils_CustomAccessed/CustomAccessedBase.h>
+
+
 namespace CppUtils
 {
     /**
      * Property wrapper implementation.
+     * TODO: We should support all special member functions.
      */
     template <class T>
-    struct CustomAccessed
+    struct CustomAccessed : public CustomAccessedBase<T>
     {
+
+        // Make parent members visible to the compiler.
+        using CustomAccessedBase<T>::Value;
+        using CustomAccessedBase<T>::GetValue;
 
     public:
 
         CustomAccessed() = default;
 
-        // TODO: We should support other overloads as well.
         CustomAccessed(T defaultValue)
         {
-            GetValue() = defaultValue;
+            operator=(defaultValue);
         }
 
-        inline T& GetValue()
-        {
-            return Value;
-        }
-
-        // Implements implicit conversion from this struct to Value's type. Allows you to treat this struct as its Value's type in code.
-        operator T() const
-        {
-            return GetValue();
-        }
-
-        // Broadcasts ValueChangeDelegate TODO: We should support other overloads as well.
+        // Broadcasts ValueChangeDelegate
         // TODO: It would be nice to expose ability to broadcast even when value is same.
         T& operator=(const T& newValue)
         {
-            const T oldValue = GetValue();
-            GetValue() = newValue;
+            const T oldValue = Value;
+            Value = newValue;
 
             if (newValue != oldValue)
             {
@@ -46,10 +42,14 @@ namespace CppUtils
     #endif
             }
 
+            return Value;
+        }
+
+        // Implements implicit conversion from this struct to Value's type. Allows you to treat this struct as its Value's type in code.
+        operator T() const
+        {
             return GetValue();
         }
-        
-        T Value = T{};
 
     #if 0
         // TODO: Must have generic solution for this that doesn't care about any delegate.

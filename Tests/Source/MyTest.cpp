@@ -4,5 +4,9 @@
 
 int main(int argc, char** argv)
 {
+    CppUtils::CustomAccessed<int> myCustomAccessedInt;
+
+    myCustomAccessedInt = myCustomAccessedInt + 1;
+
     return 0;
 }
