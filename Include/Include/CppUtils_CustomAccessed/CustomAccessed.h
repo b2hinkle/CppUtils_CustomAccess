@@ -2,56 +2,64 @@
 
 #pragma once
 
-#if 0
-
-USTRUCT(BlueprintType)
-struct GAMECORE_API FGCFloatPropertyWrapper : public FGCPropertyWrapperBase
+namespace CppUtils
 {
-    GENERATED_BODY()
-
-    GC_PROPERTY_WRAPPER_CHILD_BODY(FGCFloatPropertyWrapper, float, 0.f);
-
-    virtual FString ToString() const override { return FString::SanitizeFloat(Value); }
-
-protected:
-    /** The actual value of this float property */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    float Value;
-};
-
-template <>
-struct TStructOpsTypeTraits<FGCFloatPropertyWrapper> : public TStructOpsTypeTraits<FGCFloatPropertyWrapper>
-{
-    enum
+    /**
+     * Property wrapper implementation.
+     */
+    template <class T>
+    struct CustomAccessed
     {
-        WithSerializer = true, // required for the property wrapper
-        WithNetSerializer = true // required for the property wrapper
+
+    public:
+
+        // Provide default ctr to support potential UStructs users. Automatically use type's default value.
+        CustomAccessed()
+            : CustomAccessed(T{})
+        {
+        }
+
+        // TODO: We should support other overloads as well.
+        CustomAccessed(T defaultValue)
+        {
+            GetValue() = defaultValue;
+        }
+
+        inline T& GetValue()
+        {
+            return Value;
+        }
+
+        // Implements implicit conversion from this struct to Value's type. Allows you to treat this struct as its Value's type in code.
+        operator T() const
+        {
+            return GetValue();
+        }
+
+        // Broadcasts ValueChangeDelegate TODO: We should support other overloads as well.
+        // TODO: It would be nice to expose ability to broadcast even when value is same.
+        T& operator=(const T& newValue)
+        {
+            const T oldValue = GetValue();
+            GetValue() = newValue;
+
+            if (newValue != oldValue)
+            {
+    #if 0
+                ValueChangeDelegate.Broadcast(oldValue, newValue);
+    #endif
+            }
+
+            return GetValue();
+        }
+        
+        T Value;
+
+    #if 0
+        // TODO: Must have generic solution for this that doesn't care about any delegate.
+        // Change event.
+        TMulticastDelegate<void(const T&, const T&)> ValueChangeDelegate;
+    #endif
+
     };
-};
-
-
-USTRUCT(BlueprintType)
-struct GAMECORE_API FGCInt32PropertyWrapper : public FGCPropertyWrapperBase
-{
-    GENERATED_BODY()
-
-    GC_PROPERTY_WRAPPER_CHILD_BODY(FGCInt32PropertyWrapper, int32, 0);
-
-    virtual FString ToString() const override { return FString::FromInt(Value); }
-
-protected:
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 Value;
-};
-
-template <>
-struct TStructOpsTypeTraits<FGCInt32PropertyWrapper> : public TStructOpsTypeTraits<FGCInt32PropertyWrapper>
-{
-    enum
-    {
-        WithSerializer = true,
-        WithNetSerializer = true
-    };
-};
-
-#endif
+}
