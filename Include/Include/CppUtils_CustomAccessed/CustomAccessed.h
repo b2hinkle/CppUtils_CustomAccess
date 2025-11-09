@@ -3,6 +3,7 @@
 #pragma once
 
 #include <CppUtils_CustomAccessed/CustomAccessedBase.h>
+#include <CppUtils_CustomAccessed/CommonAccessorPolicies.h>
 
 
 namespace CppUtils
@@ -11,13 +12,15 @@ namespace CppUtils
      * Property wrapper implementation.
      * TODO: We should support all special member functions.
      */
-    template <class T>
+    template <
+        class T,
+        class AccessorPolicy = CppUtils::CommonAccessorPolicies::DefaultAccessorPolicy<T>
+    >
     struct CustomAccessed : public CustomAccessedBase<T>
     {
 
         // Make parent members visible to the compiler.
-        using CustomAccessedBase<T>::Value;
-        using CustomAccessedBase<T>::GetValue;
+        using CustomAccessedBase<T>::BackingValue;
 
     public:
 
@@ -25,37 +28,32 @@ namespace CppUtils
 
         CustomAccessed(T defaultValue)
         {
-            operator=(defaultValue);
+            SetValue(defaultValue);
         }
-
-        // Broadcasts ValueChangeDelegate
-        // TODO: It would be nice to expose ability to broadcast even when value is same.
-        T& operator=(const T& newValue)
+        
+        const T& GetValue() const
         {
-            const T oldValue = Value;
-            Value = newValue;
-
-            if (newValue != oldValue)
-            {
-    #if 0
-                ValueChangeDelegate.Broadcast(oldValue, newValue);
-    #endif
-            }
-
-            return Value;
+            return AccessorPolicy::Get(BackingValue);
         }
 
-        // Implements implicit conversion from this struct to Value's type. Allows you to treat this struct as its Value's type in code.
+        void SetValue(const T& newValue)
+        {
+            AccessorPolicy::Set(BackingValue, newValue);
+        }
+
+#if 0 // Adds unnecesary complexity at this stage in development. We can decide on this later when development is finished.
+
+        T& operator=(const T& newBackingValue)
+        {
+            CustomSetterFunc(newBackingValue);
+        }
+
+        // Implements implicit conversion from this struct to BackingValue's type. Allows you to treat this struct as its BackingValue's type in code.
         operator T() const
         {
             return GetValue();
         }
-
-    #if 0
-        // TODO: Must have generic solution for this that doesn't care about any delegate.
-        // Change event.
-        TMulticastDelegate<void(const T&, const T&)> ValueChangeDelegate;
-    #endif
+#endif
 
     };
 }

@@ -4,9 +4,17 @@
 
 int main(int argc, char** argv)
 {
-    CppUtils::CustomAccessed<int> myCustomAccessedInt;
+    CppUtils::CustomAccessed<int> myCustomAccessedInt(5);
 
+    const int currentValue = myCustomAccessedInt.GetValue();
+    myCustomAccessedInt.SetValue(currentValue + 1);
+
+#if 0 // TODO: Add support for this kind of syntax.
     myCustomAccessedInt = myCustomAccessedInt + 1;
+#endif
 
-    return 0;
+    const bool isSuccess = myCustomAccessedInt.GetValue() == 6;
+    return isSuccess
+        ? 0
+        : 1;
 }

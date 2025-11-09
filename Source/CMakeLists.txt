@@ -100,6 +100,7 @@ block(SCOPE_FOR VARIABLES)
     "${MY_BASE_PROJECT_NAME_FULL}_Export.cpp"
     "CppUtils_CustomAccessed/CustomAccessedBase.cpp"
     "CppUtils_CustomAccessed/CustomAccessed.cpp"
+    "CppUtils_CustomAccessed/CommonAccessorPolicies.cpp"
     )
 
   # Add source file paths for `BUILD_LOCAL_INTERFACE` users.

@@ -11,14 +11,23 @@ namespace CppUtils
     struct CustomAccessedBase
     {
 
-    protected:
+        // TODO: Make calls to this class actually forward its call to child rather than doing nothing.
+        // TODO: Support all value categories.
+    public:
 
         const T& GetValue() const
         {
-            return Value;
+            //static_cast<CustomAccessed>(this)->;
         }
+
+        void SetValue(const T& newValue)
+        {
+            
+        }
+
+    protected:
     
-        T Value = T{};
+        T BackingValue = T{};
 
     };
 }
