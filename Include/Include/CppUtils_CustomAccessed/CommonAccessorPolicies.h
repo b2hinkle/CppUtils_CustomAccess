@@ -3,7 +3,7 @@
 #pragma once
 
 // Accessor policies are used to define custom accessor behavior.
-// TODO: We should provide default accessor behavior for all value categories and cv.
+// TODO: We need to support accessors that user other value categories and cv.
 namespace CppUtils::CommonAccessorPolicies
 {
     template <class T>
