@@ -40,20 +40,20 @@ namespace CppUtils::CommonAccessorPolicies
         consteval GenericAccessorPolicy& operator=(GenericAccessorPolicy&&) noexcept = default;
 
         // Builder functions.
-        consteval GenericAccessorPolicy<T>&& SetGetterFuncPtr(const TGetterFuncPtr<T> value) &&
+        consteval GenericAccessorPolicy<T>&& Get(const TGetterFuncPtr<T> value) &&
         {
-            GetterFuncPtr = value;
+            Getter = value;
             return std::move(*this);
         }
-        consteval GenericAccessorPolicy<T>&& SetSetterFuncPtr(const TSetterFuncPtr<T> value) &&
+        consteval GenericAccessorPolicy<T>&& Set(const TSetterFuncPtr<T> value) &&
         {
-            SetterFuncPtr = value;
+            Setter = value;
             return std::move(*this);
         }
 
         // Func ptr members.
-        TGetterFuncPtr<T> GetterFuncPtr = &BasicGetter<T>;
-        TSetterFuncPtr<T> SetterFuncPtr = &BasicSetter<T>;
+        TGetterFuncPtr<T> Getter = &BasicGetter<T>;
+        TSetterFuncPtr<T> Setter = &BasicSetter<T>;
     };
 
 }

@@ -6,16 +6,16 @@ int main(int argc, char** argv)
 {
 #if 0 // TODO: Consider if we want this kind of workflow and how we might support it if so.
     constexpr CppUtils::CommonAccessorPolicies::GenericAccessorPolicy<int> myGenericAccessPol{};
-    myGenericAccessPol.GetterFuncPtr = [](const int& value) -> const int&  { return value; };
-    myGenericAccessPol.SetterFuncPtr = [](int& value, const int& newValue) { value = 85; };
+    myGenericAccessPol.Get = [](const int& value) -> const int&  { return value; };
+    myGenericAccessPol.Set = [](int& value, const int& newValue) { value = 85; };
 #endif
 
     CppUtils::CustomAccessed
         <
             int,
             CppUtils::CommonAccessorPolicies::GenericAccessorPolicy<int>{}
-                .SetGetterFuncPtr([](const int& value) -> const int&  { return value; })
-                .SetSetterFuncPtr([](int& value, const int& newValue) { value = 85; })
+                .Get([](const int& value) -> const int&  { return value; })
+                .Set([](int& value, const int& newValue) { value = 85; })
         >
     myCustomAccessedInt(5);
 
