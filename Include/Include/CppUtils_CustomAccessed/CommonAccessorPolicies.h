@@ -42,18 +42,18 @@ namespace CppUtils::CommonAccessorPolicies
         // Builder functions.
         consteval GenericAccessorPolicy<T>&& Get(const TGetterFuncPtr<T> value) &&
         {
-            Getter = value;
+            m_Get = value;
             return std::move(*this);
         }
         consteval GenericAccessorPolicy<T>&& Set(const TSetterFuncPtr<T> value) &&
         {
-            Setter = value;
+            m_Set = value;
             return std::move(*this);
         }
 
         // Func ptr members.
-        TGetterFuncPtr<T> Getter = &BasicGetter<T>;
-        TSetterFuncPtr<T> Setter = &BasicSetter<T>;
+        TGetterFuncPtr<T> m_Get = &BasicGetter<T>;
+        TSetterFuncPtr<T> m_Set = &BasicSetter<T>;
     };
 
 }

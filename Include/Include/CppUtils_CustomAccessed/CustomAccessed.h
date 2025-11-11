@@ -37,18 +37,18 @@ namespace CppUtils
         //       part of their calculation.
         const T& GetValue() const
         {
-            return AccessorPolicy.Getter(BackingValue);
+            return AccessorPolicy.m_Get(m_BackingValue);
         }
 
         void SetValue(const T& newValue)
         {
-            AccessorPolicy.Setter(BackingValue, newValue);
+            AccessorPolicy.m_Set(m_BackingValue, newValue);
         }
 
     protected:
     
         // TODO: Would be good to support no backing value instantiations for particular use cases.
-        T BackingValue{};
+        T m_BackingValue{};
 
     };
 }
