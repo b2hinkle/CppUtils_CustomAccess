@@ -14,14 +14,14 @@ namespace CppUtils
      */
     template <
         class T,
-        auto AccessorPolicyInstance = CppUtils::CommonAccessorPolicies::GenericAccessorPolicy<T>()
+        auto AccessorPolicy = CppUtils::CommonAccessorPolicies::GenericAccessorPolicy<T>()
     >
 #if 0 // TODO: We need to enforce it to be an accessor policy type, but first, we need to also create a concept defining what the type actually can be.
-    requires decltype(AccessorPolicyInstance) == IsAccessorPolicyConcept
+    requires decltype(AccessorPolicy) == IsAccessorPolicyConcept
 #endif
     struct CustomAccessed
     {
-        using AccessorPolicyInstanceType = decltype(AccessorPolicyInstance);
+        using AccessorPolicyType = decltype(AccessorPolicy);
 
     public:
 
@@ -37,12 +37,12 @@ namespace CppUtils
         //       part of their calculation.
         const T& GetValue() const
         {
-            return AccessorPolicyInstance.CallGetter(BackingValue);
+            return AccessorPolicy.CallGetter(BackingValue);
         }
 
         void SetValue(const T& newValue)
         {
-            AccessorPolicyInstance.CallSetter(BackingValue, newValue);
+            AccessorPolicy.CallSetter(BackingValue, newValue);
         }
 
     protected:
