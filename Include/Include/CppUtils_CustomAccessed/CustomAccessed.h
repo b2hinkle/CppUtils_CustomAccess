@@ -28,6 +28,9 @@ namespace CppUtils
             SetValue(defaultValue);
         }
         
+        // TODO: We definately need to support other return types in terms of ref vs copy (maybe even cv but not as pressing).
+        //       There are many potential use cases where user wants to return an r value, essentially by using the backing value as
+        //       part of their calculation.
         const T& GetValue() const
         {
             return AccessorPolicy::Get(BackingValue);
@@ -40,6 +43,7 @@ namespace CppUtils
 
     protected:
     
+        // TODO: Would be good to support no backing value instantiations for particular use cases.
         T BackingValue = T{};
 
     };

@@ -21,6 +21,8 @@ namespace CppUtils::CommonAccessorPolicies
     /*
     * Pourpose of this policy is to allow for externalization of behavior when creating an accessor policy.
     * The policy is simply generated with the func ptrs to forward its call to. Cleaner api for user to work with.
+    * 
+    * TODO: Solve required order for function ptrs.
     */
     template <
         class T,
