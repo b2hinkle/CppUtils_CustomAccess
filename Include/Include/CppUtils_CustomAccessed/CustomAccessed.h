@@ -8,21 +8,64 @@
 
 namespace CppUtils
 {
+    template <
+        class T,
+        template <class, class>
+        class PolicyToFind,
+        class... Policies>
+    struct FindAccessPolicy;
+
+    template <
+        class T,
+        template <class, class>
+        class PolicyToFind,
+        class First,
+        class... Rest>
+    struct FindAccessPolicy<T, PolicyToFind, First, Rest...>
+    {
+        using type = std::conditional_t
+        <
+            std::is_base_of_v
+            <
+                PolicyToFind<T, First>,
+                First
+            >,
+            First,
+            typename FindAccessPolicy<T, PolicyToFind, Rest...>::type
+        >;
+    };
+
+    template <
+        class T,
+        template <class, class>
+        class PolicyToFind>
+    struct FindAccessPolicy<T, PolicyToFind>
+    {
+        using type = void; // No policy found
+    };
+    
+    template <
+        class T,
+        template <class, class>
+        class PolicyToFind,
+        class... AccessorPolicies>
+    using FindAccessPolicy_T = FindAccessPolicy<T, PolicyToFind, AccessorPolicies...>::type;
+
     /**
      * Property wrapper implementation.
+     * User generates access behavior by providing policy classes as template arguments. Generic accessor policies are most common, as they simply forward execution to users' external function definitions. Default behavior exists where user doesn't specify behavior.
+-    * User functions are specified via packed template type parameters. This way, "argument" order of policies is up to the user and there are no forced argument situations.
      * TODO: We should support all special member functions.
      */
     template <
         class T,
-        auto AccessorPolicy = CppUtils::CommonAccessorPolicies::GenericAccessorPolicy<T>{}
+        class... AccessorPolicies
     >
 #if 0 // TODO: We need to enforce it to be an accessor policy type, but first, we need to also create a concept defining what the type actually can be.
     requires decltype(AccessorPolicy) == IsAccessorPolicyConcept
 #endif
     struct CustomAccessed
     {
-        using AccessorPolicyType = decltype(AccessorPolicy);
-
     public:
 
         CustomAccessed() = default;
@@ -37,12 +80,28 @@ namespace CppUtils
         //       part of their calculation.
         const T& GetValue() const
         {
-            return AccessorPolicy.m_Get(m_BackingValue);
+            using foundAccessorPolicy = FindAccessPolicy_T<T, CppUtils::CommonAccessorPolicies::GetterAccessorPolicy, AccessorPolicies...>;
+            if constexpr (std::is_same_v<foundAccessorPolicy, void>)
+            {
+                return CppUtils::CommonAccessorPolicies::BasicGetter<T>(m_BackingValue);
+            }
+            else
+            {
+                return foundAccessorPolicy::Get(m_BackingValue);
+            }
         }
 
         void SetValue(const T& newValue)
         {
-            AccessorPolicy.m_Set(m_BackingValue, newValue);
+            using foundAccessorPolicy = FindAccessPolicy_T<T, CppUtils::CommonAccessorPolicies::SetterAccessorPolicy, AccessorPolicies...>;
+            if constexpr (std::is_same_v<foundAccessorPolicy, void>)
+            {
+                return CppUtils::CommonAccessorPolicies::BasicSetter<T>(m_BackingValue, newValue);
+            }
+            else
+            {
+                return foundAccessorPolicy::Set(m_BackingValue, newValue);
+            }
         }
 
     protected:
@@ -51,4 +110,6 @@ namespace CppUtils
         T m_BackingValue{};
 
     };
+
+
 }

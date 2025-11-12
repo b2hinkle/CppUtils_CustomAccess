@@ -22,38 +22,46 @@ namespace CppUtils::CommonAccessorPolicies
     template <class T>
     using TSetterFuncPtr = void (*)(T& value, const T& newValue);
 
-    /*
-    * Purpose of this accessor policy is to remove the need to manualy write accessor policy structs. It does this by allowing the externalization of policy function definitions.
-    * The policy functions simply forwards execution to optional user functions, essentially overriding default behaviors.
-    * User functions are specified via builder functions through function chaining. This way, "argument" order is up to the user and there are no forced argument situations.
-    * 
-    * Most (if not all) custom accessor policies can be generated using this, but custom accessor policies can always be manually written if that control is needed.
-    */
-    template <class T>
-    struct GenericAccessorPolicy
+    template <
+        class T,
+        class TDerived
+    >
+    struct GetterAccessorPolicy
     {
-        // We explicitly declare the special member functions to mark them consteval to guarentee compile-time only lifetime.
-        consteval GenericAccessorPolicy() = default;
-        consteval GenericAccessorPolicy(const GenericAccessorPolicy&) = default;
-        consteval GenericAccessorPolicy(GenericAccessorPolicy&&) noexcept = default;
-        consteval GenericAccessorPolicy& operator=(const GenericAccessorPolicy&) = default;
-        consteval GenericAccessorPolicy& operator=(GenericAccessorPolicy&&) noexcept = default;
+        static inline const T& Get(const T& value) { return TDerived::Get(value); }
+    };
 
-        // Builder functions.
-        consteval GenericAccessorPolicy<T>&& Get(const TGetterFuncPtr<T> value) &&
-        {
-            m_Get = value;
-            return std::move(*this);
-        }
-        consteval GenericAccessorPolicy<T>&& Set(const TSetterFuncPtr<T> value) &&
-        {
-            m_Set = value;
-            return std::move(*this);
-        }
+    /*
+    * Option for `Get` policy function definition externalization.
+    */
+    template <
+        class T,
+        TGetterFuncPtr<T> GetterFuncPtr = &CppUtils::CommonAccessorPolicies::BasicGetter<T>
+        >
+    struct GenericGetterAccessorPolicy : GetterAccessorPolicy<T, GenericGetterAccessorPolicy<T, GetterFuncPtr>>
+    {
+        static inline const T& Get(const T& value) { return GetterFuncPtr(value); }
+    };
 
-        // Func ptr members.
-        TGetterFuncPtr<T> m_Get = &BasicGetter<T>;
-        TSetterFuncPtr<T> m_Set = &BasicSetter<T>;
+    template <
+        class T,
+        class TDerived
+    >
+    struct SetterAccessorPolicy
+    {
+        static inline void Set(T& value, const T& newValue) { return TDerived::Set(value); }
+    };
+
+    /*
+    * Option for `Set` policy function definition externalization.
+    */
+    template <
+        class T,
+        TSetterFuncPtr<T> SetterFuncPtr = &CppUtils::CommonAccessorPolicies::BasicSetter<T>
+        >
+    struct GenericSetterAccessorPolicy : SetterAccessorPolicy<T, GenericSetterAccessorPolicy<T, SetterFuncPtr>>
+    {
+        static inline void Set(T& value, const T& newValue) { SetterFuncPtr(value, newValue); }
     };
 
 }
