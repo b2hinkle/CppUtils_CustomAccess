@@ -61,9 +61,6 @@ namespace CppUtils
         class T,
         class... AccessorPolicies
     >
-#if 0 // TODO: We need to enforce it to be an accessor policy type, but first, we need to also create a concept defining what the type actually can be.
-    requires decltype(AccessorPolicy) == IsAccessorPolicyConcept
-#endif
     struct CustomAccessed
     {
     public:
