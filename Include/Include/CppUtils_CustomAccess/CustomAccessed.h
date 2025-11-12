@@ -35,28 +35,28 @@ namespace CppUtils
         //       part of their calculation.
         const T& GetValue() const
         {
-            using foundAccessorPolicy = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessPolicy_T<T, CppUtils::AccessorPolicies::GetterAccessorPolicy, AccessorPolicies...>;
-            if constexpr (std::is_same_v<foundAccessorPolicy, void>)
-            {
-                return CppUtils::AccessorPolicies::BasicGetter<T>(m_BackingValue);
-            }
-            else
-            {
-                return foundAccessorPolicy::Get(m_BackingValue);
-            }
+            using foundAccessorPolicy = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessPolicyWithFallback_T
+            <
+                T,
+                CppUtils::AccessorPolicies::GetterAccessorPolicy_Interface, // To find.
+                CppUtils::AccessorPolicies::BasicGetterAccessorPolicy<T>,   // Fallback.
+                AccessorPolicies...                                         // Our policies.
+            >;
+
+            return foundAccessorPolicy::Get(m_BackingValue);
         }
 
         void SetValue(const T& newValue)
         {
-            using foundAccessorPolicy = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessPolicy_T<T, CppUtils::AccessorPolicies::SetterAccessorPolicy, AccessorPolicies...>;
-            if constexpr (std::is_same_v<foundAccessorPolicy, void>)
-            {
-                return CppUtils::AccessorPolicies::BasicSetter<T>(m_BackingValue, newValue);
-            }
-            else
-            {
-                return foundAccessorPolicy::Set(m_BackingValue, newValue);
-            }
+            using foundAccessorPolicy = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessPolicyWithFallback_T
+            <
+                T,
+                CppUtils::AccessorPolicies::SetterAccessorPolicy_Interface, // To find.
+                CppUtils::AccessorPolicies::BasicSetterAccessorPolicy<T>,   // Fallback.
+                AccessorPolicies...                                         // Our policies.
+            >;
+
+            foundAccessorPolicy::Set(m_BackingValue, newValue);
         }
 
     protected:

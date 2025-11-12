@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     CppUtils::CustomAccessed
         <
             int,
-            CppUtils::AccessorPolicies::GenericSetterAccessorPolicy<int, [](int& value, const int& newValue) { value = 85; }>,
+            CppUtils::AccessorPolicies::GenericSetterAccessorPolicy<int, [](int& value, const int& newValue)  { value = 1; }>,
             CppUtils::AccessorPolicies::GenericGetterAccessorPolicy<int, [](const int& value) -> const int&  { return value + 1; }>
         >
     myCustomAccessedInt(5);
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     myCustomAccessedInt = myCustomAccessedInt + 1;
 #endif
 
-    const bool isSuccess = myCustomAccessedInt.GetValue() == 86;
+    const bool isSuccess = myCustomAccessedInt.GetValue() == 2;
     return isSuccess
         ? 0
         : 1;

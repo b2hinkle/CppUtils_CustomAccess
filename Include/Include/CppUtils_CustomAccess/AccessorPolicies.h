@@ -11,12 +11,6 @@
 namespace CppUtils::AccessorPolicies
 {
     template <class T>
-    static inline const T& BasicGetter(const T& value) { return value; }
-
-    template <class T>
-    static inline void BasicSetter(T& value, const T& newValue) { value = newValue; }
-
-    template <class T>
     using TGetterFuncPtr = const T& (*)(const T& value);
 
     template <class T>
@@ -26,9 +20,18 @@ namespace CppUtils::AccessorPolicies
         class T,
         class TDerived
     >
-    struct GetterAccessorPolicy
+    struct GetterAccessorPolicy_Interface
     {
         static inline const T& Get(const T& value) { return TDerived::Get(value); }
+    };
+
+    /*
+    * Basic getter behavior, used as default behavior.
+    */
+    template <class T>
+    struct BasicGetterAccessorPolicy : GetterAccessorPolicy_Interface<T, BasicGetterAccessorPolicy<T>>
+    {
+        static inline const T& Get(const T& value) { return value; }
     };
 
     /*
@@ -36,9 +39,9 @@ namespace CppUtils::AccessorPolicies
     */
     template <
         class T,
-        TGetterFuncPtr<T> GetterFuncPtr = &CppUtils::AccessorPolicies::BasicGetter<T>
+        TGetterFuncPtr<T> GetterFuncPtr
         >
-    struct GenericGetterAccessorPolicy : GetterAccessorPolicy<T, GenericGetterAccessorPolicy<T, GetterFuncPtr>>
+    struct GenericGetterAccessorPolicy : GetterAccessorPolicy_Interface<T, GenericGetterAccessorPolicy<T, GetterFuncPtr>>
     {
         static inline const T& Get(const T& value) { return GetterFuncPtr(value); }
     };
@@ -47,9 +50,18 @@ namespace CppUtils::AccessorPolicies
         class T,
         class TDerived
     >
-    struct SetterAccessorPolicy
+    struct SetterAccessorPolicy_Interface
     {
         static inline void Set(T& value, const T& newValue) { return TDerived::Set(value); }
+    };
+
+    /*
+    * Basic setter behavior, used as default behavior.
+    */
+    template <class T>
+    struct BasicSetterAccessorPolicy : SetterAccessorPolicy_Interface<T, BasicSetterAccessorPolicy<T>>
+    {
+        static inline void Set(T& value, const T& newValue) { value = newValue; }
     };
 
     /*
@@ -57,14 +69,27 @@ namespace CppUtils::AccessorPolicies
     */
     template <
         class T,
-        TSetterFuncPtr<T> SetterFuncPtr = &CppUtils::AccessorPolicies::BasicSetter<T>
+        TSetterFuncPtr<T> SetterFuncPtr
         >
-    struct GenericSetterAccessorPolicy : SetterAccessorPolicy<T, GenericSetterAccessorPolicy<T, SetterFuncPtr>>
+    struct GenericSetterAccessorPolicy : SetterAccessorPolicy_Interface<T, GenericSetterAccessorPolicy<T, SetterFuncPtr>>
     {
         static inline void Set(T& value, const T& newValue) { SetterFuncPtr(value, newValue); }
     };
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #if 0 // TODO: This should be a reusable broadcast on set function for convenience.
     // TODO: It would be nice to have another function that even broadcasts when valueRef is same.

@@ -10,6 +10,7 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
         class T,
         template <class, class>
         class PolicyToFind,
+        class FallbackPolicy,
         class... Policies>
     struct FindAccessPolicy;
 
@@ -17,9 +18,10 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
         class T,
         template <class, class>
         class PolicyToFind,
+        class FallbackPolicy,
         class First,
         class... Rest>
-    struct FindAccessPolicy<T, PolicyToFind, First, Rest...>
+    struct FindAccessPolicy<T, PolicyToFind, FallbackPolicy, First, Rest...>
     {
         using type = std::conditional_t
         <
@@ -29,27 +31,42 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
                 First
             >,
             First,
-            typename FindAccessPolicy<T, PolicyToFind, Rest...>::type
+            typename FindAccessPolicy<T, PolicyToFind, FallbackPolicy, Rest...>::type
         >;
     };
 
     template <
         class T,
         template <class, class>
-        class PolicyToFind>
-    struct FindAccessPolicy<T, PolicyToFind>
+        class PolicyToFind,
+        class FallbackPolicy>
+    struct FindAccessPolicy<T, PolicyToFind, FallbackPolicy>
     {
-        using type = void; // No policy found
+        using type = FallbackPolicy; // No policy found
     };
 }
 
 namespace CppUtils::CustomAccess::AccessorPolicyUtils
 {
+    /*
+    * Finds the first accessor policy of type `PolicyToFind` in the provided `AccessorPolicies...`. Returns `FallbackPolicy` if no such policy is found.
+    */
+    template <
+        class T,
+        template <class, class>
+        class PolicyToFind,
+        class    FallbackPolicy,
+        class... AccessorPolicies>
+    using FindAccessPolicyWithFallback_T = Detail::FindAccessPolicy<T, PolicyToFind, FallbackPolicy, AccessorPolicies...>::type;
+
+    /*
+    * Finds the first accessor policy of type `PolicyToFind` in the provided `AccessorPolicies...`. Returns `void` if no such policy is found.
+    */
     template <
         class T,
         template <class, class>
         class PolicyToFind,
         class... AccessorPolicies>
-    using FindAccessPolicy_T = Detail::FindAccessPolicy<T, PolicyToFind, AccessorPolicies...>::type;
+    using FindAccessPolicy_T = FindAccessPolicyWithFallback_T<T, PolicyToFind, void, AccessorPolicies...>::type;
 
 }
