@@ -21,6 +21,22 @@ namespace CppUtils
     >
     struct CustomAccessed
     {
+        
+    public:
+
+        template
+        <
+            template <class, class>
+            class TPolicyInterface
+        >
+        using GetAccessorPolicyByInterface = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessPolicyWithFallback_T
+            <
+            T,
+            TPolicyInterface,                                                                                // To find.
+            typename CppUtils::AccessorPolicies::PolicyInterfaceTraits<T, TPolicyInterface>::FallbackPolicy, // Fallback.
+            AccessorPolicies...                                                                              // Our policies.
+            >;
+
     public:
 
         CustomAccessed() = default;
@@ -35,28 +51,12 @@ namespace CppUtils
         //       part of their calculation.
         const T& GetValue() const
         {
-            using foundAccessorPolicy = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessPolicyWithFallback_T
-            <
-                T,
-                CppUtils::AccessorPolicies::GetterAccessorPolicy_Interface, // To find.
-                CppUtils::AccessorPolicies::BasicGetterAccessorPolicy<T>,   // Fallback.
-                AccessorPolicies...                                         // Our policies.
-            >;
-
-            return foundAccessorPolicy::Get(m_BackingValue);
+            return GetAccessorPolicyByInterface<CppUtils::AccessorPolicies::GetterAccessorPolicy_Interface>::Get(m_BackingValue);
         }
 
         void SetValue(const T& newValue)
         {
-            using foundAccessorPolicy = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessPolicyWithFallback_T
-            <
-                T,
-                CppUtils::AccessorPolicies::SetterAccessorPolicy_Interface, // To find.
-                CppUtils::AccessorPolicies::BasicSetterAccessorPolicy<T>,   // Fallback.
-                AccessorPolicies...                                         // Our policies.
-            >;
-
-            foundAccessorPolicy::Set(m_BackingValue, newValue);
+            GetAccessorPolicyByInterface<CppUtils::AccessorPolicies::SetterAccessorPolicy_Interface>::Set(m_BackingValue, newValue);
         }
 
     protected:

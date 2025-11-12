@@ -68,5 +68,4 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils
         class PolicyToFind,
         class... AccessorPolicies>
     using FindAccessPolicy_T = FindAccessPolicyWithFallback_T<T, PolicyToFind, void, AccessorPolicies...>::type;
-
 }
