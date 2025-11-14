@@ -3,7 +3,7 @@
 #pragma once
 
 #include <utility>
-#include <CppUtils_CustomAccess/AccessorPolicyInterfaces.h>
+#include <CppUtils_CustomAccess/AccessorPolicyCategories.h>
 
 /*
 * Accessor policies are used to define custom accessor behavior (e.g. getters/setters).

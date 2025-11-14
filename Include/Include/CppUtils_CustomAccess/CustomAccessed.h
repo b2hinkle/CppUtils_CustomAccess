@@ -49,7 +49,7 @@ namespace CppUtils
 #if 0
         static consteval bool IsRefReturn
         {
-            return std::is_reference_v<GetReturnType_T<GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::GetterAccessorPolicy_Interface>::Get>>;
+            return std::is_reference_v<GetReturnType_T<GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Getter>::Get>>;
         }
 #endif
         
