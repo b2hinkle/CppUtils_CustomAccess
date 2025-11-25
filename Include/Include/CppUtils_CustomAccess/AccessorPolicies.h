@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include <utility>
+#include <type_traits>
+#include <CppUtils_CustomAccess/FunctionTraits.h>
 #include <CppUtils_CustomAccess/AccessorPolicyCategories.h>
+#include <CppUtils_CustomAccess/AccessorPolicyUtils.h>
 
 /*
 * Accessor policies are used to define custom accessor behavior (e.g. getters/setters).
@@ -11,8 +13,18 @@
 */
 namespace CppUtils::AccessorPolicies
 {
-    template <class T>
-    using TGetterFuncPtr = const T& (*)(const T& value);
+    template <auto TFunc>
+    concept TCallable = requires { typename CppUtils::CustomAccess::FunctionPointerTraits<decltype(TFunc)>; };
+
+#if 0
+    // TODO: Finish implementation
+    template <auto TFunc>
+    concept TGetterCallable = TCallable<TFunc> && /* Only 1 arg and its type matches return type */;
+
+    // TODO: Finish implementation
+    template <auto TFunc>
+    concept TSetterCallable = TCallable<TFunc> && /* Only 1 arg */;
+#endif
 
     template <class T>
     using TSetterFuncPtr = void (*)(T& value, const T& newValue);
@@ -41,19 +53,60 @@ namespace CppUtils::AccessorPolicies
     /*
     * Option for `Get` policy function definition externalization.
     */
-    template <
+    template
+    <
         class T,
-        TGetterFuncPtr<T> GetterFuncPtr
-        >
+        auto GetterFuncPtr
+    >
+    requires (TCallable<GetterFuncPtr> /* TODO: Use TGetterCallable when implemented */)
     struct GenericGetterAccessorPolicy
     {
-        static inline const T& Get(const T& value) { return GetterFuncPtr(value); }
+        using GetterFuncPtrTraits = CppUtils::CustomAccess::FunctionPointerTraits<decltype(GetterFuncPtr)>;
+        using ReturnType = GetterFuncPtrTraits::ReturnType;
+        //using ClassType  = GetterFuncPtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
+        using FirstArg = std::tuple_element_t<0, typename GetterFuncPtrTraits::ArgsTuple>;
+
+        static inline const T& Get(const T& value)
+            requires
+            (
+                std::is_lvalue_reference_v<ReturnType> &&
+                CppUtils::CustomAccess::IsConstAfterRemovingRef  <ReturnType>() &&
+                std::is_lvalue_reference_v<FirstArg>   &&
+                CppUtils::CustomAccess::IsConstAfterRemovingRef  <FirstArg>()
+            )
+        {
+            return GetterFuncPtr(value);
+        }
+
+        static inline T Get(const T& value)
+            requires
+            (
+                !std::is_reference_v       <ReturnType> &&
+                !CppUtils::CustomAccess::IsConstAfterRemovingRef  <ReturnType>() &&
+                 std::is_lvalue_reference_v<FirstArg>   &&
+                 CppUtils::CustomAccess::IsConstAfterRemovingRef  <FirstArg>()
+            )
+        {
+            return GetterFuncPtr(value);
+        }
+
+        static inline T Get(T value)
+            requires
+            (
+                !std::is_reference_v     <ReturnType> &&
+                !CppUtils::CustomAccess::IsConstAfterRemovingRef<ReturnType>() &&
+                !std::is_reference_v     <FirstArg>   &&
+                !CppUtils::CustomAccess::IsConstAfterRemovingRef<FirstArg>()
+            )
+        {
+            return GetterFuncPtr(value);
+        }
     };
 
     template
     <
         class T,
-        TGetterFuncPtr<T> GetterFuncPtr
+        auto GetterFuncPtr
     >
     struct PolicyTraits<GenericGetterAccessorPolicy<T, GetterFuncPtr>>
     {
@@ -86,17 +139,65 @@ namespace CppUtils::AccessorPolicies
     */
     template <
         class T,
-        TSetterFuncPtr<T> SetterFuncPtr
+        auto SetterFuncPtr // TODO: We should make this variatic so user can define both copy and move. Only 2 possible args, but variatic for order agnostic.
         >
+    requires (TCallable<SetterFuncPtr> /* TODO: Use TSetterCallable when implemented */)
     struct GenericSetterAccessorPolicy
     {
-        static inline void Set(T& value, const T& newValue) { SetterFuncPtr(value, newValue); }
+        using SetterFuncPtrTraits = CppUtils::CustomAccess::FunctionPointerTraits<decltype(SetterFuncPtr)>;
+        using ReturnType = SetterFuncPtrTraits::ReturnType;
+        //using ClassType  = SetterFuncPtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
+        using ArgsTuple = SetterFuncPtrTraits::ArgsTuple;
+        using FirstArg  = std::tuple_element_t<0, ArgsTuple>;
+        using SecondArg = std::tuple_element_t<1, ArgsTuple>;
+
+        static consteval bool IsFirstArgValid()
+        {
+            return std::is_lvalue_reference_v<FirstArg> &&
+                   !CppUtils::CustomAccess::IsConstAfterRemovingRef <FirstArg>();
+        }
+
+        // Copy sets.
+
+        static inline void Set(T& value, const T& newValue)
+            requires
+            (
+                IsFirstArgValid()                     &&
+                std::is_lvalue_reference_v<SecondArg> &&
+                CppUtils::CustomAccess::IsConstAfterRemovingRef  <SecondArg>()
+            )
+        {
+            SetterFuncPtr(value, newValue);
+        }
+
+        static inline void Set(T& value, T newValue)
+            requires
+            (
+                IsFirstArgValid()                    &&
+                !std::is_reference_v     <SecondArg> &&
+                !std::is_const_v<SecondArg>
+            )
+        {
+            SetterFuncPtr(value, newValue);
+        }
+
+        // Move set.
+        static inline void Set(T& value, T&& newValue)
+            requires
+            (
+                IsFirstArgValid()                     &&
+                std::is_rvalue_reference_v<SecondArg> &&
+                !CppUtils::CustomAccess::IsConstAfterRemovingRef <SecondArg>()
+            )
+        {
+            SetterFuncPtr(value, std::move(newValue));
+        }
     };
 
     template
     <
         class T,
-        TSetterFuncPtr<T> SetterFuncPtr
+        auto SetterFuncPtr
     >
     struct PolicyTraits<GenericSetterAccessorPolicy<T, SetterFuncPtr>>
     {

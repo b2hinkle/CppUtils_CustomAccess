@@ -93,6 +93,8 @@ target_sources(${MY_BASE_PROJECT_NAME_FULL}_Include
         "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccess/FindAccessorPolicy.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccess/UnifiedAccessorPolicy.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccess/AccessorPolicyCategories.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccess/FunctionTraits.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Include/CppUtils_CustomAccess/AccessorPolicyUtils.h"
   )
 
 # Note that we do not "find package" for our parent project. We don't need to since we are built in the same

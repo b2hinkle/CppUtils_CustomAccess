@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include <type_traits>
 #include <CppUtils_CustomAccess/CustomAccessedBase.h>
 #include <CppUtils_CustomAccess/AccessorPolicies.h>
 #include <CppUtils_CustomAccess/FindAccessorPolicy.h>
+#include <CppUtils_CustomAccess/AccessorPolicyUtils.h>
 
 
 namespace CppUtils
@@ -14,9 +16,10 @@ namespace CppUtils
      * User generates access behavior by providing policy classes as template arguments. Generic accessor policies are most common, as they simply forward execution to users' external function definitions. Default behavior exists where user doesn't specify behavior.
 -    * User functions are specified via packed template type parameters. This way, "argument" order of policies is up to the user and there are no forced argument situations.
      * TODO: We should support all special member functions.
+     * TODO: Provide a default value constructor, to support pr value sematics.
      */
     template <
-        class T,
+        class T, // TODO: Possibly loop through all accessor policies to ensure they agree on T, and give a clean error if not.
         class... AccessorPolicies
     >
     struct CustomAccessed
@@ -32,39 +35,74 @@ namespace CppUtils
         using GetAccessorPolicyByCategory = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessorPolicyWithFallback_T
             <
             T,
-            TPolicyCategory,                                                                                // To find.
+            TPolicyCategory,                                                                               // To find.
             typename CppUtils::AccessorPolicies::PolicyCategoryTraits<T, TPolicyCategory>::FallbackPolicy, // Fallback.
-            AccessorPolicies...                                                                              // Our policies.
+            AccessorPolicies...                                                                            // Our policies.
             >;
+
+        using GetterAccessPolicy = GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Getter>;
+        using SetterAccessPolicy = GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Setter>;
 
     public:
 
         CustomAccessed() = default;
-
-        CustomAccessed(T defaultValue)
-        {
-            SetValue(defaultValue);
-        }
-
-#if 0
-        static consteval bool IsRefReturn
-        {
-            return std::is_reference_v<GetReturnType_T<GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Getter>::Get>>;
-        }
-#endif
         
-        // TODO: We definately need to support other return types in terms of ref vs copy (maybe even cv but not as pressing).
-        //       There are many potential use cases where user wants to return an r value, essentially by using the backing value as
-        //       part of their calculation.
-        const T& GetValue() const
+        inline const T& GetValue() const
+            requires
+            (
+                std::is_lvalue_reference_v           <typename GetterAccessPolicy::ReturnType> &&
+                CustomAccess::IsConstAfterRemovingRef<typename GetterAccessPolicy::ReturnType>()
+            )
         {
-            return GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Getter>::Get(m_BackingValue);
+            return GetterAccessPolicy::Get(m_BackingValue);
         }
 
-        void SetValue(const T& newValue)
+        inline T GetValue() const
+            requires
+            (
+                !std::is_reference_v<typename GetterAccessPolicy::ReturnType> &&
+                !std::is_const_v    <typename GetterAccessPolicy::ReturnType>
+            )
         {
-            GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Setter>::Set(m_BackingValue, newValue);
+            // CPP 17 prvalue semantics gives us guaranteed copy elision.
+            return GetterAccessPolicy::Get(m_BackingValue);
         }
+
+
+
+
+        inline void SetValue(const T& newValue)
+            requires
+            (
+                std::is_lvalue_reference_v           <typename SetterAccessPolicy::SecondArg> &&
+                CustomAccess::IsConstAfterRemovingRef<typename SetterAccessPolicy::SecondArg>()
+            )
+        {
+            SetterAccessPolicy::Set(m_BackingValue, newValue);
+        }
+
+        inline void SetValue(T newValue)
+            requires
+            (
+                !std::is_reference_v<typename SetterAccessPolicy::SecondArg> &&
+                !std::is_const_v    <typename SetterAccessPolicy::SecondArg>
+            )
+        {
+            SetterAccessPolicy::Set(m_BackingValue, newValue);
+        }
+
+        inline void SetValue(T&& newValue)
+            requires
+            (
+                std::is_rvalue_reference_v            <typename SetterAccessPolicy::SecondArg> &&
+                !CustomAccess::IsConstAfterRemovingRef<typename SetterAccessPolicy::SecondArg>()
+            )
+        {
+            SetterAccessPolicy::Set(m_BackingValue, std::move(newValue));
+        }
+
+
+
 
     protected:
     
