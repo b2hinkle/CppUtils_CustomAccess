@@ -10,6 +10,8 @@
 /*
 * Accessor policies are used to define custom accessor behavior (e.g. getters/setters).
 * TODO: We need to support accessors that user other value categories and cv.
+* TODO: How do we want to handle basic get and set accessor policies. If we have a basic policy, it should not assume T is copyable or moveabe.
+*       This should be detectable, but at the end of the day, doing so would make it more of a black box for the user, so it's probable that this wouldn't be worth it.
 */
 namespace CppUtils::AccessorPolicies
 {

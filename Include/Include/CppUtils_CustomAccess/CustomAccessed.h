@@ -17,6 +17,7 @@ namespace CppUtils
 -    * User functions are specified via packed template type parameters. This way, "argument" order of policies is up to the user and there are no forced argument situations.
      * TODO: We should support all special member functions.
      * TODO: Provide a default value constructor, to support pr value sematics.
+     * TODO: The case of no user-defined get/set should not fallback on a default get/set implementation. The accessor should simply not exist if not defined.
      */
     template <
         class T, // TODO: Possibly loop through all accessor policies to ensure they agree on T, and give a clean error if not.
