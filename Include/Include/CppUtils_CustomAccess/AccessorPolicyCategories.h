@@ -19,7 +19,11 @@ namespace CppUtils::AccessorPolicies
         static_assert(false && sizeof(T), "No traits defined. You must define a (partial) specialization of this struct for your policy category class.");
     };
 
-    template <class Policy>
+    template 
+    <
+        class T,
+        class Policy
+    >
     struct PolicyTraits
     {
         static_assert(false && sizeof(Policy), "No policy category defined. You must define a (partial) specialization of this struct for your policy class. This way you can assign a policy category to your policy, allowing us to search for you.");

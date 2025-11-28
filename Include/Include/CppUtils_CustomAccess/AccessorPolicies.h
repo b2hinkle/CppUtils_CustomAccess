@@ -47,7 +47,7 @@ namespace CppUtils::AccessorPolicies
     };
 
     template <class T>
-    struct PolicyTraits<BasicGetterAccessorPolicy<T>>
+    struct PolicyTraits<T, BasicGetterAccessorPolicy<T>>
     {
         using PolicyCategory_t = PolicyCategory_Getter<T, BasicGetterAccessorPolicy<T>>;
     };
@@ -57,7 +57,6 @@ namespace CppUtils::AccessorPolicies
     */
     template
     <
-        class T,
         auto GetterFuncPtr
     >
     requires (TCallable<GetterFuncPtr> /* TODO: Use TGetterCallable when implemented */)
@@ -68,7 +67,9 @@ namespace CppUtils::AccessorPolicies
         //using ClassType  = GetterFuncPtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
         using FirstArg = std::tuple_element_t<0, typename GetterFuncPtrTraits::ArgsTuple>;
 
-        static inline const T& Get(const T& value)
+        using ReturnValueType = std::remove_cv_t<std::remove_reference_t<ReturnType>>;
+
+        static inline const ReturnValueType& Get(const ReturnValueType& value)
             requires
             (
                 std::is_lvalue_reference_v<ReturnType> &&
@@ -80,7 +81,7 @@ namespace CppUtils::AccessorPolicies
             return GetterFuncPtr(value);
         }
 
-        static inline T Get(const T& value)
+        static inline ReturnValueType Get(const ReturnValueType& value)
             requires
             (
                 !std::is_reference_v       <ReturnType> &&
@@ -92,7 +93,7 @@ namespace CppUtils::AccessorPolicies
             return GetterFuncPtr(value);
         }
 
-        static inline T Get(T value)
+        static inline ReturnValueType Get(ReturnValueType value)
             requires
             (
                 !std::is_reference_v     <ReturnType> &&
@@ -110,9 +111,9 @@ namespace CppUtils::AccessorPolicies
         class T,
         auto GetterFuncPtr
     >
-    struct PolicyTraits<GenericGetterAccessorPolicy<T, GetterFuncPtr>>
+    struct PolicyTraits<T, GenericGetterAccessorPolicy<GetterFuncPtr>>
     {
-        using PolicyCategory_t = PolicyCategory_Getter<T, GenericGetterAccessorPolicy<T, GetterFuncPtr>>;
+        using PolicyCategory_t = PolicyCategory_Getter<T, GenericGetterAccessorPolicy<GetterFuncPtr>>;
     };
 
     /*
@@ -131,7 +132,7 @@ namespace CppUtils::AccessorPolicies
     };
 
     template <class T>
-    struct PolicyTraits<BasicSetterAccessorPolicy<T>>
+    struct PolicyTraits<T, BasicSetterAccessorPolicy<T>>
     {
         using PolicyCategory_t = PolicyCategory_Setter<T, BasicSetterAccessorPolicy<T>>;
     };
@@ -201,7 +202,7 @@ namespace CppUtils::AccessorPolicies
         class T,
         auto SetterFuncPtr
     >
-    struct PolicyTraits<GenericSetterAccessorPolicy<T, SetterFuncPtr>>
+    struct PolicyTraits<T, GenericSetterAccessorPolicy<T, SetterFuncPtr>>
     {
         using PolicyCategory_t = PolicyCategory_Setter<T, GenericSetterAccessorPolicy<T, SetterFuncPtr>>;
     };

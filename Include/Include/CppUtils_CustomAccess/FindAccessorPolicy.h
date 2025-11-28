@@ -6,15 +6,20 @@
 
 namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
 {
-    template <class Policy>
-    using GetPolicyCategoryType_t = CppUtils::AccessorPolicies::PolicyTraits<Policy>::PolicyCategory_t;
+    template
+    <
+        class T,
+        class Policy
+    >
+    using GetPolicyCategoryType_t = CppUtils::AccessorPolicies::PolicyTraits<T, Policy>::PolicyCategory_t;
 
     template
     <
+        class T,
         class Policy,
         class PolicyCategory
     >
-    consteval bool IsPolicyOfPolicyCategory() { return std::is_same_v<GetPolicyCategoryType_t<Policy>, PolicyCategory>; }
+    consteval bool IsPolicyOfPolicyCategory() { return std::is_same_v<GetPolicyCategoryType_t<T, Policy>, PolicyCategory>; }
 
     template <
         class T,
@@ -35,7 +40,7 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
     {
         using type = std::conditional_t
         <
-            IsPolicyOfPolicyCategory<First, PolicyCategory<T, First>>(),
+            IsPolicyOfPolicyCategory<T, First, PolicyCategory<T, First>>(),
             First,
             typename FindAccessorPolicy<T, PolicyCategory, FallbackPolicy, Rest...>::type
         >;
