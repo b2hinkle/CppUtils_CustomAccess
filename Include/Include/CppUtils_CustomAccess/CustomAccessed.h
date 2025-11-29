@@ -33,16 +33,16 @@ namespace CppUtils
             template <class, class>
             class TPolicyCategory
         >
-        using GetAccessorPolicyByCategory = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessorPolicyWithFallback_T
+        using FindAccessorPolicyByCategory = CppUtils::CustomAccess::AccessorPolicyUtils::FindAccessorPolicyWithFallback_T
         <
             T,
-            TPolicyCategory,                                                                               // To find.
-            typename CppUtils::AccessorPolicies::PolicyCategoryTraits<T, TPolicyCategory>::FallbackPolicy, // Fallback.
-            AccessorPolicies...                                                                            // Our policies.
+            TPolicyCategory,    // To find.
+            void,               // Fallback.
+            AccessorPolicies... // Our policies.
         >;
 
-        using GetterAccessPolicy = GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Getter>;
-        using SetterAccessPolicy = GetAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Setter>;
+        using GetterAccessorPolicy = FindAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Getter>;
+        using SetterAccessorPolicy = FindAccessorPolicyByCategory<CppUtils::AccessorPolicies::PolicyCategory_Setter>;
 
     public:
 
@@ -51,22 +51,24 @@ namespace CppUtils
         inline const T& GetValue() const
             requires
             (
-                std::is_lvalue_reference_v           <typename GetterAccessPolicy::ReturnType> &&
-                CustomAccess::IsConstAfterRemovingRef<typename GetterAccessPolicy::ReturnType>()
+                !std::is_same_v<GetterAccessorPolicy, void> &&
+                std::is_lvalue_reference_v           <typename GetterAccessorPolicy::ReturnType> &&
+                CustomAccess::IsConstAfterRemovingRef<typename GetterAccessorPolicy::ReturnType>()
             )
         {
-            return GetterAccessPolicy::Get(m_BackingValue);
+            return GetterAccessorPolicy::Get(m_BackingValue);
         }
 
         inline T GetValue() const
             requires
             (
-                !std::is_reference_v<typename GetterAccessPolicy::ReturnType> &&
-                !std::is_const_v    <typename GetterAccessPolicy::ReturnType>
+                !std::is_same_v<GetterAccessorPolicy, void> &&
+                !std::is_reference_v<typename GetterAccessorPolicy::ReturnType> &&
+                !std::is_const_v    <typename GetterAccessorPolicy::ReturnType>
             )
         {
             // CPP 17 prvalue semantics gives us guaranteed copy elision.
-            return GetterAccessPolicy::Get(m_BackingValue);
+            return GetterAccessorPolicy::Get(m_BackingValue);
         }
 
 
@@ -75,31 +77,34 @@ namespace CppUtils
         inline void SetValue(const T& newValue)
             requires
             (
-                std::is_lvalue_reference_v           <typename SetterAccessPolicy::SecondArg> &&
-                CustomAccess::IsConstAfterRemovingRef<typename SetterAccessPolicy::SecondArg>()
+                !std::is_same_v<SetterAccessorPolicy, void> &&
+                std::is_lvalue_reference_v           <typename SetterAccessorPolicy::SecondArg> &&
+                CustomAccess::IsConstAfterRemovingRef<typename SetterAccessorPolicy::SecondArg>()
             )
         {
-            SetterAccessPolicy::Set(m_BackingValue, newValue);
+            SetterAccessorPolicy::Set(m_BackingValue, newValue);
         }
 
         inline void SetValue(T newValue)
             requires
             (
-                !std::is_reference_v<typename SetterAccessPolicy::SecondArg> &&
-                !std::is_const_v    <typename SetterAccessPolicy::SecondArg>
+                !std::is_same_v<SetterAccessorPolicy, void> &&
+                !std::is_reference_v<typename SetterAccessorPolicy::SecondArg> &&
+                !std::is_const_v    <typename SetterAccessorPolicy::SecondArg>
             )
         {
-            SetterAccessPolicy::Set(m_BackingValue, newValue);
+            SetterAccessorPolicy::Set(m_BackingValue, newValue);
         }
 
         inline void SetValue(T&& newValue)
             requires
             (
-                std::is_rvalue_reference_v            <typename SetterAccessPolicy::SecondArg> &&
-                !CustomAccess::IsConstAfterRemovingRef<typename SetterAccessPolicy::SecondArg>()
+                !std::is_same_v<SetterAccessorPolicy, void> &&
+                std::is_rvalue_reference_v            <typename SetterAccessorPolicy::SecondArg> &&
+                !CustomAccess::IsConstAfterRemovingRef<typename SetterAccessorPolicy::SecondArg>()
             )
         {
-            SetterAccessPolicy::Set(m_BackingValue, std::move(newValue));
+            SetterAccessorPolicy::Set(m_BackingValue, std::move(newValue));
         }
 
 
