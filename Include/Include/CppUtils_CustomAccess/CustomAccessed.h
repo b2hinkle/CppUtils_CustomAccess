@@ -20,7 +20,7 @@ namespace CppUtils
      * TODO: The case of no user-defined get/set should not fallback on a default get/set implementation. The accessor should simply not exist if not defined.
      */
     template <
-        class T, // TODO: Possibly loop through all accessor policies to ensure they agree on T, and give a clean error if not.
+        class T,
         class... AccessorPolicies
     >
     struct CustomAccessed

@@ -4,7 +4,7 @@
 
 #include <CppUtils_CustomAccess/AccessorPolicies.h>
 
-namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
+namespace CppUtils::CustomAccess::AccessorPolicyUtils
 {
     template
     <
@@ -12,7 +12,7 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
         class Policy
     >
     using GetPolicyCategoryType_t = CppUtils::AccessorPolicies::PolicyTraits<T, Policy>::PolicyCategory_t;
-
+    
     template
     <
         class T,
@@ -20,7 +20,10 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
         class PolicyCategory
     >
     consteval bool IsPolicyOfPolicyCategory() { return std::is_same_v<GetPolicyCategoryType_t<T, Policy>, PolicyCategory>; }
+}
 
+namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
+{
     template <
         class T,
         template <class, class>
