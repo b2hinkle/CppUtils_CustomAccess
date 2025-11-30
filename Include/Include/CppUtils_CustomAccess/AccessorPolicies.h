@@ -97,11 +97,11 @@ namespace CppUtils::AccessorPolicies
     template
     <
         class T,
-        auto GetterFuncPtr
+        auto UserCallablePtr
     >
-    struct PolicyTraits<T, GenericGetterAccessorPolicy<GetterFuncPtr>>
+    struct PolicyTraits<T, GenericGetterAccessorPolicy<UserCallablePtr>>
     {
-        using PolicyCategory_t = PolicyCategory_Getter<T, GenericGetterAccessorPolicy<GetterFuncPtr>>;
+        using PolicyCategory_t = PolicyCategory_Getter<T, GenericGetterAccessorPolicy<UserCallablePtr>>;
     };
 
     /*
