@@ -15,17 +15,13 @@
 */
 namespace CppUtils::AccessorPolicies
 {
-    template <auto TFunc>
-    concept TCallable = requires { typename CppUtils::CustomAccess::FunctionPointerTraits<decltype(TFunc)>; };
+    template <auto T>
+    concept TCallable = requires { typename CppUtils::CustomAccess::FunctionPointerTraits<decltype(T)>; };
 
 #if 0
     // TODO: Finish implementation
-    template <auto TFunc>
-    concept TGetterCallable = TCallable<TFunc> && /* Only 1 arg and its type matches return type */;
-
-    // TODO: Finish implementation
-    template <auto TFunc>
-    concept TSetterCallable = TCallable<TFunc> && /* Only 1 arg */;
+    template <auto T>
+    concept TSetterCallable = TCallable<T> && /* Only 1 arg */;
 #endif
 
     template <class T>
@@ -53,56 +49,48 @@ namespace CppUtils::AccessorPolicies
     };
 
     /*
-    * Option for `Get` policy function definition externalization.
+    * Getter accessor policy for function definition externalization.
+    * Static asserts for clear error messaging. Enforces the structure of the user's callable to meet the purpose of a getter.
     */
     template
     <
-        auto GetterFuncPtr
+        auto UserCallablePtr
     >
-    requires (TCallable<GetterFuncPtr> /* TODO: Use TGetterCallable when implemented */)
     struct GenericGetterAccessorPolicy
     {
-        using GetterFuncPtrTraits = CppUtils::CustomAccess::FunctionPointerTraits<decltype(GetterFuncPtr)>;
-        using ReturnType = GetterFuncPtrTraits::ReturnType;
-        //using ClassType  = GetterFuncPtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
-        using FirstArg = std::tuple_element_t<0, typename GetterFuncPtrTraits::ArgsTuple>;
+        static_assert(TCallable<UserCallablePtr>, "We expect a user deffined callable pointer as the non-type template argument.");
 
-        using ReturnValueType = std::remove_cv_t<std::remove_reference_t<ReturnType>>;
+        using UserCallablePtrTraits = CppUtils::CustomAccess::FunctionPointerTraits<decltype(UserCallablePtr)>;
+        
+        static_assert(std::tuple_size_v<typename UserCallablePtrTraits::ArgsTuple> == 1, "Callable must have 1 argument.");
 
-        static inline const ReturnValueType& Get(const ReturnValueType& value)
-            requires
-            (
-                std::is_lvalue_reference_v<ReturnType> &&
-                CppUtils::CustomAccess::IsConstAfterRemovingRef  <ReturnType>() &&
-                std::is_lvalue_reference_v<FirstArg>   &&
-                CppUtils::CustomAccess::IsConstAfterRemovingRef  <FirstArg>()
-            )
+        using ReturnType = typename UserCallablePtrTraits::ReturnType;
+        using FirstArg = std::tuple_element_t<0, typename UserCallablePtrTraits::ArgsTuple>;
+
+        static_assert(std::is_same_v
+        <
+            std::remove_cvref_t<ReturnType>,
+            std::remove_cvref_t<FirstArg>
+        >,
+        "Return value type must match first parameter value type, since the provided argument is the backing value. Note that cv and ref qualifiers don't impact value type.");
+
+        static_assert(
+            (!std::is_reference_v<FirstArg>)
+            ||
+            (std::is_reference_v<FirstArg> && CppUtils::CustomAccess::IsConstAfterRemovingRef<FirstArg>()),
+            "Reference as the first argument is only allowed if its value type is made const, since the provided argument is the backing value.");
+
+        static_assert(!std::is_rvalue_reference_v<FirstArg>, "First parameter should not be an rvalue reference. It does not make sense to steal the data of the backing value through a getter, nor does it make sense to prefer a const rvalue ref over a const lvalue ref.");
+
+        //using ClassType  = UserCallablePtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
+
+        /*
+        * Inline to avoid unnecesary copy in the case of non-ref parameter.
+        * No need to account for perfect forwarding. No possible rvalue references to account for, given the enforced type of the user's callable.
+        */
+        static inline ReturnType Get(FirstArg value)
         {
-            return GetterFuncPtr(value);
-        }
-
-        static inline ReturnValueType Get(const ReturnValueType& value)
-            requires
-            (
-                !std::is_reference_v       <ReturnType> &&
-                !CppUtils::CustomAccess::IsConstAfterRemovingRef  <ReturnType>() &&
-                 std::is_lvalue_reference_v<FirstArg>   &&
-                 CppUtils::CustomAccess::IsConstAfterRemovingRef  <FirstArg>()
-            )
-        {
-            return GetterFuncPtr(value);
-        }
-
-        static inline ReturnValueType Get(ReturnValueType value)
-            requires
-            (
-                !std::is_reference_v     <ReturnType> &&
-                !CppUtils::CustomAccess::IsConstAfterRemovingRef<ReturnType>() &&
-                !std::is_reference_v     <FirstArg>   &&
-                !CppUtils::CustomAccess::IsConstAfterRemovingRef<FirstArg>()
-            )
-        {
-            return GetterFuncPtr(value);
+            return UserCallablePtr(value);
         }
     };
 
@@ -154,7 +142,7 @@ namespace CppUtils::AccessorPolicies
         using FirstArg  = std::tuple_element_t<0, ArgsTuple>;
         using SecondArg = std::tuple_element_t<1, ArgsTuple>;
 
-        using FirstArgValueType = std::remove_cv_t<std::remove_reference_t<FirstArg>>;
+        using FirstArgValueType = std::remove_cvref_t<FirstArg>;
 
         static consteval bool IsFirstArgValid()
         {
