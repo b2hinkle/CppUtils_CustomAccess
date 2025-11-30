@@ -28,7 +28,7 @@ namespace CppUtils::AccessorPolicies
     using TSetterFuncPtr = void (*)(T& value, const T& newValue);
 
     /*
-    * Basic getter behavior, used as default behavior.
+    * Basic getter behavior.
     */
     template <class T>
     struct BasicGetterAccessorPolicy
@@ -105,7 +105,7 @@ namespace CppUtils::AccessorPolicies
     };
 
     /*
-    * Basic setter behavior, used as default behavior.
+    * Basic setter behavior.
     */
     template <class T>
     struct BasicSetterAccessorPolicy
