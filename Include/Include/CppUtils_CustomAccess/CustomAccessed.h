@@ -3,7 +3,6 @@
 #pragma once
 
 #include <type_traits>
-#include <CppUtils_CustomAccess/CustomAccessedBase.h>
 #include <CppUtils_CustomAccess/AccessorPolicies.h>
 #include <CppUtils_CustomAccess/FindAccessorPolicy.h>
 #include <CppUtils_CustomAccess/AccessorPolicyUtils.h>
@@ -13,8 +12,8 @@ namespace CppUtils
 {
     /**
      * Property wrapper implementation.
-     * User generates access behavior by providing policy classes as template arguments. Generic accessor policies are most common, as they simply forward execution to users' external function definitions. Default behavior exists where user doesn't specify behavior.
--    * User functions are specified via packed template type parameters. This way, "argument" order of policies is up to the user and there are no forced argument situations.
+     * User generates access behavior by providing accessor policy classes as template arguments. Generic accessor policies are most common, as they simply forward execution to users' external function definitions. Default behavior exists where user doesn't specify behavior.
+-    * User functions are specified via packed template type parameters. This way, "argument" order of accessor policies is up to the user and there are no forced argument situations.
      * TODO: We should support all special member functions.
      * TODO: Provide a default value constructor, to support pr value sematics.
      */
@@ -27,17 +26,17 @@ namespace CppUtils
         
     public:
 
-        using GetterAccessorPolicyCategory = CppUtils::CustomAccess::AccessorPolicyUtils::GetAccessorPolicyCategory_T
+        using BuiltAccessorPolicyStaticInterface_Getter = CppUtils::CustomAccess::AccessorPolicyUtils::BuildAccessorPolicyStaticInterface
          <
              T,
-             CppUtils::AccessorPolicies::PolicyCategory_Getter,
+             CppUtils::AccessorPolicies::AccessorPolicyStaticInterface_Getter,
              AccessorPolicies...
          >;
 
-        using SetterAccessorPolicyCategory = CppUtils::CustomAccess::AccessorPolicyUtils::GetAccessorPolicyCategory_T
+        using BuiltAccessorPolicyStaticInterface_Setter = CppUtils::CustomAccess::AccessorPolicyUtils::BuildAccessorPolicyStaticInterface
          <
              T,
-             CppUtils::AccessorPolicies::PolicyCategory_Setter,
+             CppUtils::AccessorPolicies::AccessorPolicyStaticInterface_Setter,
              AccessorPolicies...
          >;
 
@@ -47,26 +46,26 @@ namespace CppUtils
 
         /*
         * In the case of copy return value, cpp 17 prvalue semantics gives us guaranteed copy elision.
-        * Since we're able to avoid decltype(auto) return type, we do. This is because its deduction phase can trigger unnecessary errors when our policy isn't defined correctly.
+        * Since we're able to avoid decltype(auto) return type, we do. This is because its deduction phase can trigger unnecessary errors when our accessor policy isn't defined correctly.
         */
-        inline GetterAccessorPolicyCategory::ReturnType GetValue() const
-            requires ( requires(T dummyBackingValue) { GetterAccessorPolicyCategory::Get(dummyBackingValue); } )
+        inline BuiltAccessorPolicyStaticInterface_Getter::ReturnType GetValue() const
+            requires ( requires(T dummyBackingValue) { BuiltAccessorPolicyStaticInterface_Getter::Get(dummyBackingValue); } )
         {
-            return GetterAccessorPolicyCategory::Get(m_BackingValue);
+            return BuiltAccessorPolicyStaticInterface_Getter::Get(m_BackingValue);
         }
 
-        inline void SetValue(SetterAccessorPolicyCategory::SecondArg newValue)
-            requires (requires(T dummyBackingValue, T dummyNewValue) { SetterAccessorPolicyCategory::Set(dummyBackingValue, dummyNewValue); } )
+        inline void SetValue(BuiltAccessorPolicyStaticInterface_Setter::SecondArg newValue)
+            requires (requires(T dummyBackingValue, T dummyNewValue) { BuiltAccessorPolicyStaticInterface_Setter::Set(dummyBackingValue, dummyNewValue); } )
         {
-            if constexpr (std::is_rvalue_reference_v<typename SetterAccessorPolicyCategory::SecondArg>)
+            if constexpr (std::is_rvalue_reference_v<typename BuiltAccessorPolicyStaticInterface_Setter::SecondArg>)
             {
                 // Non-const rvalue reference. Non-const because that's already been asserted.
-                SetterAccessorPolicyCategory::Set(m_BackingValue, std::move(newValue));
+                BuiltAccessorPolicyStaticInterface_Setter::Set(m_BackingValue, std::move(newValue));
             }
             else
             {
                 // Either const lvalue reference or const/non-const copy.
-                SetterAccessorPolicyCategory::Set(m_BackingValue, newValue);
+                BuiltAccessorPolicyStaticInterface_Setter::Set(m_BackingValue, newValue);
             }
         }
 

@@ -4,12 +4,12 @@
 
 #include <type_traits>
 #include <CppUtils_CustomAccess/FunctionTraits.h>
-#include <CppUtils_CustomAccess/PolicyAndPolicyCategoryTraits_PrimaryTemplates.h>
-#include <CppUtils_CustomAccess/AccessorPolicyCategories.h>
+#include <CppUtils_CustomAccess/AccessorPolicyAndAccessorPolicyStaticInterfaceTraits_PrimaryTemplates.h>
+#include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.h>
 #include <CppUtils_CustomAccess/AccessorPolicyUtils.h>
 
 /*
-* Accessor policies are used to define custom accessor behavior (e.g. getters/setters). Must specialize a `PolicyTraits` with its policy category `PolicyCategory_t` for it to be findable by `CustomAccessed`.
+* Accessor policies are used to define custom accessor behavior (e.g. getters/setters). Must specialize a `AccessorPolicyTraits` with its static interface `AccessorPolicyStaticInterface_t` for it to be findable by `CustomAccessed`.
 */
 namespace CppUtils::AccessorPolicies
 {
@@ -48,13 +48,13 @@ namespace CppUtils::AccessorPolicies
         class T,
         auto UserCallablePtr
     >
-    struct PolicyTraits<T, GenericGetterAccessorPolicy<UserCallablePtr>>
+    struct AccessorPolicyTraits<T, GenericGetterAccessorPolicy<UserCallablePtr>>
     {
-        using PolicyCategory_t = PolicyCategory_Getter<T, GenericGetterAccessorPolicy<UserCallablePtr>>;
+        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Getter<T, GenericGetterAccessorPolicy<UserCallablePtr>>;
     };
 
     /*
-    * Option for `Set` policy function definition externalization.
+    * Setter accessor policy for function definition externalization.
     */
     template
     <
@@ -98,9 +98,9 @@ namespace CppUtils::AccessorPolicies
         class T,
         auto UserCallablePtr
     >
-    struct PolicyTraits<T, GenericSetterAccessorPolicy<UserCallablePtr>>
+    struct AccessorPolicyTraits<T, GenericSetterAccessorPolicy<UserCallablePtr>>
     {
-        using PolicyCategory_t = PolicyCategory_Setter<T, GenericSetterAccessorPolicy<UserCallablePtr>>;
+        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Setter<T, GenericSetterAccessorPolicy<UserCallablePtr>>;
     };
 }
 

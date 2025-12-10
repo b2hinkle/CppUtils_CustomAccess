@@ -5,8 +5,8 @@
 namespace CppUtils::AccessorPolicies
 {
     /*
-    * Dummy policy to make compiler happy when parsing a getter function which won't be generated.
-    * Used as default for when user doesn't provide a getter policy, and it effectively disables the getter (no generation).
+    * Dummy accessor policy to make compiler happy when parsing a getter function which won't be generated.
+    * Used as default for when user doesn't provide a getter accessor policy, and it effectively disables the getter (no generation).
     */
     template <class T>
     struct NullGetterAccessorPolicy

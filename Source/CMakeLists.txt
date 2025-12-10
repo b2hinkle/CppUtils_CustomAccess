@@ -98,17 +98,15 @@ block(SCOPE_FOR VARIABLES)
   # List of all source files (relative to our "Source" directory).
   set(MyTargetSources
     "${MY_BASE_PROJECT_NAME_FULL}_Export.cpp"
-    "CppUtils_CustomAccess/CustomAccessedBase.cpp"
     "CppUtils_CustomAccess/CustomAccessed.cpp"
     "CppUtils_CustomAccess/AccessorPolicies.cpp"
     "CppUtils_CustomAccess/FindAccessorPolicy.cpp"
-    "CppUtils_CustomAccess/UnifiedAccessorPolicy.cpp"
-    "CppUtils_CustomAccess/AccessorPolicyCategories.cpp"
+    "CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.cpp"
     "CppUtils_CustomAccess/AccessorPolicyUtils.cpp"
     "CppUtils_CustomAccess/NullGetterAccessorPolicy.cpp"
     "CppUtils_CustomAccess/NullSetterAccessorPolicy.cpp"
     "CppUtils_CustomAccess/FunctionTraits.cpp"
-    "CppUtils_CustomAccess/PolicyAndPolicyCategoryTraits_PrimaryTemplates.cpp"
+    "CppUtils_CustomAccess/AccessorPolicyAndAccessorPolicyStaticInterfaceTraits_PrimaryTemplates.cpp"
     )
 
   # Add source file paths for `BUILD_LOCAL_INTERFACE` users.

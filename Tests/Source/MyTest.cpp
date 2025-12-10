@@ -28,11 +28,11 @@ int main(int argc, char** argv)
     //MyStruct_InstanceTest instance;
 
     CppUtils::CustomAccessed
-        <
-            int,
-            CppUtils::AccessorPolicies::GenericGetterAccessorPolicy<[](const int& value) {return value + 8;}>,
-            CppUtils::AccessorPolicies::GenericSetterAccessorPolicy<[](int& value, const int& newValue) {value = newValue;}>
-        >
+    <
+        int,
+        CppUtils::AccessorPolicies::GenericGetterAccessorPolicy<[](const int& value) {return value + 8;}>,
+        CppUtils::AccessorPolicies::GenericSetterAccessorPolicy<[](int& value, const int& newValue) {value = newValue;}>
+    >
     myCustomAccessedInt;
     myCustomAccessedInt.SetValue(10);
     //myCustomAccessedInt.SetValue(2);

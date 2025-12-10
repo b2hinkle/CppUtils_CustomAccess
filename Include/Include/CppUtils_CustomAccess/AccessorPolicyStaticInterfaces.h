@@ -14,23 +14,22 @@
 namespace CppUtils::AccessorPolicies
 {
     /*
-    * Static interface for getter policies. Enforces requirements, and dispatches to getter policies.
-    * Static asserts for clear error messaging.
+    * Static interface for getter accessor policies. Enforces requirements, and dispatches to getter policies.
     */
     template
     <
         class T,
-        class Policy
+        class AccessorPolicy
     >
-    struct PolicyCategory_Getter
+    struct AccessorPolicyStaticInterface_Getter
     {
-        static_assert ( requires { typename Policy::ReturnType; }, "The accessor policy must provide a using declaration for the return type.");
-        static_assert ( requires { typename Policy::FirstArg; },   "The accessor policy must provide a using declaration for the first parameter type.");
+        static_assert ( requires { typename AccessorPolicy::ReturnType; }, "The accessor policy must provide a using declaration for the return type.");
+        static_assert ( requires { typename AccessorPolicy::FirstArg; },   "The accessor policy must provide a using declaration for the first parameter type.");
 
-        using ReturnType = typename Policy::ReturnType;
-        using FirstArg   = typename Policy::FirstArg;
+        using ReturnType = typename AccessorPolicy::ReturnType;
+        using FirstArg   = typename AccessorPolicy::FirstArg;
 
-        static_assert(std::is_invocable_v<decltype(Policy::Get), FirstArg>, "The policy class is missing this function.");
+        static_assert(std::is_invocable_v<decltype(AccessorPolicy::Get), FirstArg>, "The policy class is missing this function.");
 
         static_assert(std::is_same_v
         <
@@ -58,28 +57,27 @@ namespace CppUtils::AccessorPolicies
             );
 
         static inline ReturnType Get(FirstArg value)
-            requires (!std::is_same_v<Policy, NullGetterAccessorPolicy<T>>)
+            requires (!std::is_same_v<AccessorPolicy, NullGetterAccessorPolicy<T>>)
         {
-            return Policy::Get(value);
+            return AccessorPolicy::Get(value);
         }
     };
 
     /*
-    * Static interface for setter policies. Enforces requirements, and dispatches to setter policies.
-    * Static asserts for clear error messaging.
+    * Static interface for setter accessor policies. Enforces requirements, and dispatches to setter policies.
     */
     template
     <
         class T,
-        class Policy
+        class AccessorPolicy
     >
-    struct PolicyCategory_Setter
+    struct AccessorPolicyStaticInterface_Setter
     {
-        static_assert ( requires { typename Policy::FirstArg; },  "The accessor policy must provide a using declaration for the first parameter type.");
-        static_assert ( requires { typename Policy::SecondArg; }, "The accessor policy must provide a using declaration for the second parameter type.");
+        static_assert ( requires { typename AccessorPolicy::FirstArg; },  "The accessor policy must provide a using declaration for the first parameter type.");
+        static_assert ( requires { typename AccessorPolicy::SecondArg; }, "The accessor policy must provide a using declaration for the second parameter type.");
 
-        using FirstArg  = typename Policy::FirstArg;
-        using SecondArg = typename Policy::SecondArg;
+        using FirstArg  = typename AccessorPolicy::FirstArg;
+        using SecondArg = typename AccessorPolicy::SecondArg;
 
         static_assert(std::is_lvalue_reference_v<FirstArg> && !CppUtils::CustomAccess::IsConstAfterRemovingRef<FirstArg>(), "First parameter must be a non-const lvalue reference. Otherwise, the callback doesn't make sense.");
 
@@ -119,23 +117,23 @@ namespace CppUtils::AccessorPolicies
 
         
 
-        static_assert(std::is_invocable_v<decltype(Policy::Set), FirstArg, SecondArg>, "The policy class is missing its set function.");
+        static_assert(std::is_invocable_v<decltype(AccessorPolicy::Set), FirstArg, SecondArg>, "The policy class is missing its set function.");
         
         /*
         * 
         */
         static inline void Set(FirstArg value, SecondArg newValue)
-            requires (!std::is_same_v<Policy, NullSetterAccessorPolicy<T>>)
+            requires (!std::is_same_v<AccessorPolicy, NullSetterAccessorPolicy<T>>)
         {
             if constexpr (std::is_rvalue_reference_v<SecondArg>)
             {
                 // Non-const rvalue reference. Non-const because that's already been asserted.
-                Policy::Set(value, std::move(newValue));
+                AccessorPolicy::Set(value, std::move(newValue));
             }
             else
             {
                 // Either const lvalue reference or const/non-const copy.
-                Policy::Set(value, newValue);
+                AccessorPolicy::Set(value, newValue);
             }
         }
     };

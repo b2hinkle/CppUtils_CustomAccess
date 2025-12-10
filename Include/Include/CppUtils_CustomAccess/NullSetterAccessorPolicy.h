@@ -5,8 +5,8 @@
 namespace CppUtils::AccessorPolicies
 {
     /*
-    * Dummy policy to make compiler happy when parsing a setter function which won't be generated.
-    * Used as default for when user doesn't provide a setter policy, and it effectively disables the setter (no generation).
+    * Dummy accessor policy to make compiler happy when parsing a setter function which won't be generated.
+    * Used as default for when user doesn't provide a setter accessor policy, and it effectively disables the setter (no generation).
     */
     template <class T>
     struct NullSetterAccessorPolicy

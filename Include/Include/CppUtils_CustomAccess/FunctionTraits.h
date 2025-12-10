@@ -6,7 +6,7 @@
 
 /*
 * Function pointer traits, used to extract information about a given function.
-* Specializations make use of inheritance to avoid code duplication.
+* Specializations make use of inheritance to avoid dup code.
 * TODO: I want to move this to a more general library later.
 */
 namespace CppUtils::CustomAccess

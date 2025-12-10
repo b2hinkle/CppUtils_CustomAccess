@@ -9,17 +9,17 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils
     template
     <
         class T,
-        class Policy
+        class AccessorPolicy
     >
-    using GetPolicyCategoryType_t = CppUtils::AccessorPolicies::PolicyTraits<T, Policy>::PolicyCategory_t;
+    using GetAccessorPolicyStaticInterface_t = CppUtils::AccessorPolicies::AccessorPolicyTraits<T, AccessorPolicy>::AccessorPolicyStaticInterface_t;
     
     template
     <
         class T,
-        class Policy,
-        class PolicyCategory
+        class AccessorPolicy,
+        class AccessorPolicyStaticInterface
     >
-    consteval bool IsPolicyOfPolicyCategory() { return std::is_same_v<GetPolicyCategoryType_t<T, Policy>, PolicyCategory>; }
+    consteval bool DoesAccessorPolicyBelongToAccessorPolicyStaticInterface() { return std::is_same_v<GetAccessorPolicyStaticInterface_t<T, AccessorPolicy>, AccessorPolicyStaticInterface>; }
 }
 
 namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
@@ -28,8 +28,8 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
     <
         class T,
         template <class, class>
-        class PolicyCategory,
-        class... Policies
+        class AccessorPolicyStaticInterface,
+        class... AccessorPolicies
     >
     struct FindAccessorPolicy;
 
@@ -37,45 +37,48 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
     <
         class T,
         template <class, class>
-        class PolicyCategory,
+        class AccessorPolicyStaticInterface,
         class First,
         class... Rest
     >
-    struct FindAccessorPolicy<T, PolicyCategory, First, Rest...>
+    struct FindAccessorPolicy<T, AccessorPolicyStaticInterface, First, Rest...>
     {
-        using PolicyType = std::conditional_t
+        using AccessorPolicy = std::conditional_t
         <
-            IsPolicyOfPolicyCategory<T, First, PolicyCategory<T, First>>(),
+            DoesAccessorPolicyBelongToAccessorPolicyStaticInterface<T, First, AccessorPolicyStaticInterface<T, First>>(),
             First,
-            typename FindAccessorPolicy<T, PolicyCategory, Rest...>::PolicyType
+            typename FindAccessorPolicy<T, AccessorPolicyStaticInterface, Rest...>::AccessorPolicy
         >;
     };
 
+    /*
+    * No accessor policy found specialization.
+    */
     template
     <
         class T,
         template <class, class>
-        class PolicyCategory
+        class AccessorPolicyStaticInterface
     >
-    struct FindAccessorPolicy<T, PolicyCategory>
+    struct FindAccessorPolicy<T, AccessorPolicyStaticInterface>
     {
-        using PolicyType = CppUtils::AccessorPolicies::PolicyCategoryTraits<T, PolicyCategory>::FallbackPolicy; // No policy found
+        using AccessorPolicy = CppUtils::AccessorPolicies::AccessorPolicyStaticInterfaceTraits<T, AccessorPolicyStaticInterface>::FallbackAccessorPolicy;
     };
 }
 
 namespace CppUtils::CustomAccess::AccessorPolicyUtils
 {
     /*
-    * Finds the first accessor policy of category `PolicyCategory` in the provided `AccessorPolicies...`. Returns category's `FallbackPolicy` if no such policy is found.
+    * Finds the first accessor policy belonging to `AccessorPolicyStaticInterface` in the provided `AccessorPolicies...`. Returns `AccessorPolicyStaticInterface`'s `FallbackAccessorPolicy` if no such accessor policy is found.
     */
     template
     <
         class T,
         template <class, class>
-        class PolicyCategory,
+        class AccessorPolicyStaticInterface,
         class... AccessorPolicies
     >
-    using GetAccessorPolicyByCategory_T = Detail::FindAccessorPolicy<T, PolicyCategory, AccessorPolicies...>::PolicyType;
+    using GetAccessorPolicyByStaticInterface = Detail::FindAccessorPolicy<T, AccessorPolicyStaticInterface, AccessorPolicies...>::AccessorPolicy;
 
     /*
     * Builds the static interface for dispatching calls to the correct accessor policy in `AccessorPolicies...`.
@@ -84,12 +87,12 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils
     <
         class T,
         template <class, class>
-        class PolicyCategory,
+        class AccessorPolicyStaticInterface,
         class... AccessorPolicies
     >
-    using GetAccessorPolicyCategory_T = PolicyCategory
+    using BuildAccessorPolicyStaticInterface = AccessorPolicyStaticInterface
     <
         T,
-        GetAccessorPolicyByCategory_T<T, PolicyCategory, AccessorPolicies...>
+        GetAccessorPolicyByStaticInterface<T, AccessorPolicyStaticInterface, AccessorPolicies...>
     >;
 }
