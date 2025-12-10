@@ -27,26 +27,19 @@ namespace CppUtils
         
     public:
 
-        template
-        <
-            template <class, class>
-            class TPolicyCategory
-        >
-        using GetAccessorPolicy = CppUtils::CustomAccess::AccessorPolicyUtils::GetAccessorPolicyByCategory_T
-        <
-            T,
-            TPolicyCategory,    // To find.
-            AccessorPolicies... // Our policies.
-        >;
+        using GetterAccessorPolicyCategory = CppUtils::CustomAccess::AccessorPolicyUtils::GetAccessorPolicyCategory_T
+         <
+             T,
+             CppUtils::AccessorPolicies::PolicyCategory_Getter,
+             AccessorPolicies...
+         >;
 
-        // TODO: Change from directly accessing the accessor policies to using the policy category, this way we operated based on an interface.
-        using GetterAccessorPolicy = GetAccessorPolicy<CppUtils::AccessorPolicies::PolicyCategory_Getter>;
-        using SetterAccessorPolicy = GetAccessorPolicy<CppUtils::AccessorPolicies::PolicyCategory_Setter>;
-
-
-
-        using GetterAccessorPolicyCategory = CppUtils::AccessorPolicies::PolicyCategory_Getter<T, GetterAccessorPolicy>; // TODO: We shoudl probably make this process not have to know about the exact policy.
-        using SetterAccessorPolicyCategory = CppUtils::AccessorPolicies::PolicyCategory_Setter<T, SetterAccessorPolicy>; // TODO: We shoudl probably make this process not have to know about the exact policy.
+        using SetterAccessorPolicyCategory = CppUtils::CustomAccess::AccessorPolicyUtils::GetAccessorPolicyCategory_T
+         <
+             T,
+             CppUtils::AccessorPolicies::PolicyCategory_Setter,
+             AccessorPolicies...
+         >;
 
     public:
 

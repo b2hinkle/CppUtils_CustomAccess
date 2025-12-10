@@ -60,12 +60,30 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
 namespace CppUtils::CustomAccess::AccessorPolicyUtils
 {
     /*
-    * Finds the first accessor policy of type `PolicyCategory` in the provided `AccessorPolicies...`. Returns `FallbackPolicy` if no such policy is found.
+    * Finds the first accessor policy of category `PolicyCategory` in the provided `AccessorPolicies...`. Returns category's `FallbackPolicy` if no such policy is found.
     */
-    template <
+    template
+    <
         class T,
         template <class, class>
         class PolicyCategory,
-        class... AccessorPolicies>
+        class... AccessorPolicies
+    >
     using GetAccessorPolicyByCategory_T = Detail::FindAccessorPolicy<T, PolicyCategory, AccessorPolicies...>::type;
+
+    /*
+    * Builds the static interface for dispatching calls to the correct accessor policy in `AccessorPolicies...`.
+    */
+    template
+    <
+        class T,
+        template <class, class>
+        class PolicyCategory,
+        class... AccessorPolicies
+    >
+    using GetAccessorPolicyCategory_T = PolicyCategory
+    <
+        T,
+        GetAccessorPolicyByCategory_T<T, PolicyCategory, AccessorPolicies...>
+    >;
 }
