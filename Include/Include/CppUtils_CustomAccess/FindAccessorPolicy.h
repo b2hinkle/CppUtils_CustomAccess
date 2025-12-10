@@ -24,36 +24,42 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils
 
 namespace CppUtils::CustomAccess::AccessorPolicyUtils::Detail
 {
-    template <
+    template
+    <
         class T,
         template <class, class>
         class PolicyCategory,
-        class... Policies>
+        class... Policies
+    >
     struct FindAccessorPolicy;
 
-    template <
+    template
+    <
         class T,
         template <class, class>
         class PolicyCategory,
         class First,
-        class... Rest>
+        class... Rest
+    >
     struct FindAccessorPolicy<T, PolicyCategory, First, Rest...>
     {
-        using type = std::conditional_t
+        using PolicyType = std::conditional_t
         <
             IsPolicyOfPolicyCategory<T, First, PolicyCategory<T, First>>(),
             First,
-            typename FindAccessorPolicy<T, PolicyCategory, Rest...>::type
+            typename FindAccessorPolicy<T, PolicyCategory, Rest...>::PolicyType
         >;
     };
 
-    template <
+    template
+    <
         class T,
         template <class, class>
-        class PolicyCategory>
+        class PolicyCategory
+    >
     struct FindAccessorPolicy<T, PolicyCategory>
     {
-        using type = CppUtils::AccessorPolicies::PolicyCategoryTraits<T, PolicyCategory>::FallbackPolicy; // No policy found
+        using PolicyType = CppUtils::AccessorPolicies::PolicyCategoryTraits<T, PolicyCategory>::FallbackPolicy; // No policy found
     };
 }
 
@@ -69,7 +75,7 @@ namespace CppUtils::CustomAccess::AccessorPolicyUtils
         class PolicyCategory,
         class... AccessorPolicies
     >
-    using GetAccessorPolicyByCategory_T = Detail::FindAccessorPolicy<T, PolicyCategory, AccessorPolicies...>::type;
+    using GetAccessorPolicyByCategory_T = Detail::FindAccessorPolicy<T, PolicyCategory, AccessorPolicies...>::PolicyType;
 
     /*
     * Builds the static interface for dispatching calls to the correct accessor policy in `AccessorPolicies...`.
