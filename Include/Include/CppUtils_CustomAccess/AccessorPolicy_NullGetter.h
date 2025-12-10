@@ -9,7 +9,7 @@ namespace CppUtils::AccessorPolicies
     * Used as default for when user doesn't provide a getter accessor policy, and it effectively disables the getter (no generation).
     */
     template <class T>
-    struct NullGetterAccessorPolicy
+    struct AccessorPolicy_NullGetter
     {
         using ReturnType = T;
         using FirstArg   = T;

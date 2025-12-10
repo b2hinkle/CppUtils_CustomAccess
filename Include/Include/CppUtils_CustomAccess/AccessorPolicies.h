@@ -20,7 +20,7 @@ namespace CppUtils::AccessorPolicies
     <
         auto UserCallablePtr
     >
-    struct GenericGetterAccessorPolicy
+    struct AccessorPolicy_GenericGetter
     {
         static_assert(CppUtils::CustomAccess::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
 
@@ -48,9 +48,9 @@ namespace CppUtils::AccessorPolicies
         class T,
         auto UserCallablePtr
     >
-    struct AccessorPolicyTraits<T, GenericGetterAccessorPolicy<UserCallablePtr>>
+    struct AccessorPolicyTraits<T, AccessorPolicy_GenericGetter<UserCallablePtr>>
     {
-        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Getter<T, GenericGetterAccessorPolicy<UserCallablePtr>>;
+        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Getter<T, AccessorPolicy_GenericGetter<UserCallablePtr>>;
     };
 
     /*
@@ -60,7 +60,7 @@ namespace CppUtils::AccessorPolicies
     <
         auto UserCallablePtr // TODO: We should make this variatic so user can define both copy and move. Only 2 possible args, but variatic for order agnostic.
     >
-    struct GenericSetterAccessorPolicy
+    struct AccessorPolicy_GenericSetter
     {
         static_assert(CppUtils::CustomAccess::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
 
@@ -72,8 +72,6 @@ namespace CppUtils::AccessorPolicies
         using SecondArg = std::tuple_element_t<1, typename UserCallablePtrTraits::ArgsTuple>;
 
         //using ClassType  = UserCallablePtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
-
-
 
         /*
         * 
@@ -98,9 +96,9 @@ namespace CppUtils::AccessorPolicies
         class T,
         auto UserCallablePtr
     >
-    struct AccessorPolicyTraits<T, GenericSetterAccessorPolicy<UserCallablePtr>>
+    struct AccessorPolicyTraits<T, AccessorPolicy_GenericSetter<UserCallablePtr>>
     {
-        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Setter<T, GenericSetterAccessorPolicy<UserCallablePtr>>;
+        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Setter<T, AccessorPolicy_GenericSetter<UserCallablePtr>>;
     };
 }
 

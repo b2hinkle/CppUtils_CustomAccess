@@ -3,8 +3,8 @@
 #pragma once
 
 #include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.h>
-#include <CppUtils_CustomAccess/NullGetterAccessorPolicy.h>
-#include <CppUtils_CustomAccess/NullSetterAccessorPolicy.h>
+#include <CppUtils_CustomAccess/AccessorPolicy_NullGetter.h>
+#include <CppUtils_CustomAccess/AccessorPolicy_NullSetter.h>
 
 namespace CppUtils::AccessorPolicies
 {
@@ -23,13 +23,13 @@ namespace CppUtils::AccessorPolicies
     template <class T>
     struct AccessorPolicyStaticInterfaceTraits<T, AccessorPolicyStaticInterface_Getter>
     {
-        using FallbackAccessorPolicy = NullGetterAccessorPolicy<T>;
+        using FallbackAccessorPolicy = AccessorPolicy_NullGetter<T>;
     };
 
     template <class T>
     struct AccessorPolicyStaticInterfaceTraits<T, AccessorPolicyStaticInterface_Setter>
     {
-        using FallbackAccessorPolicy = NullSetterAccessorPolicy<T>;
+        using FallbackAccessorPolicy = AccessorPolicy_NullSetter<T>;
     };
 }
 
@@ -46,14 +46,14 @@ namespace CppUtils::AccessorPolicies
     };
     
     template <class T>
-    struct AccessorPolicyTraits<T, NullGetterAccessorPolicy<T>>
+    struct AccessorPolicyTraits<T, AccessorPolicy_NullGetter<T>>
     {
-        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Getter<T, NullGetterAccessorPolicy<T>>;
+        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Getter<T, AccessorPolicy_NullGetter<T>>;
     };
 
     template <class T>
-    struct AccessorPolicyTraits<T, NullSetterAccessorPolicy<T>>
+    struct AccessorPolicyTraits<T, AccessorPolicy_NullSetter<T>>
     {
-        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Setter<T, NullSetterAccessorPolicy<T>>;
+        using AccessorPolicyStaticInterface_t = AccessorPolicyStaticInterface_Setter<T, AccessorPolicy_NullSetter<T>>;
     };
 }

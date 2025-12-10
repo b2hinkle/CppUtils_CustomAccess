@@ -9,7 +9,7 @@ namespace CppUtils::AccessorPolicies
     * Used as default for when user doesn't provide a setter accessor policy, and it effectively disables the setter (no generation).
     */
     template <class T>
-    struct NullSetterAccessorPolicy
+    struct AccessorPolicy_NullSetter
     {
         using FirstArg  = T&;
         using SecondArg = T;

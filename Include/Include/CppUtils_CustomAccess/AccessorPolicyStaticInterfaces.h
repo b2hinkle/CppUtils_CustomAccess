@@ -3,8 +3,8 @@
 #pragma once
 
 #include <type_traits>
-#include <CppUtils_CustomAccess/NullGetterAccessorPolicy.h>
-#include <CppUtils_CustomAccess/NullSetterAccessorPolicy.h>
+#include <CppUtils_CustomAccess/AccessorPolicy_NullGetter.h>
+#include <CppUtils_CustomAccess/AccessorPolicy_NullSetter.h>
 #include <CppUtils_CustomAccess/AccessorPolicyUtils.h>
 
 
@@ -57,7 +57,7 @@ namespace CppUtils::AccessorPolicies
             );
 
         static inline ReturnType Get(FirstArg value)
-            requires (!std::is_same_v<AccessorPolicy, NullGetterAccessorPolicy<T>>)
+            requires (!std::is_same_v<AccessorPolicy, AccessorPolicy_NullGetter<T>>)
         {
             return AccessorPolicy::Get(value);
         }
@@ -123,7 +123,7 @@ namespace CppUtils::AccessorPolicies
         * 
         */
         static inline void Set(FirstArg value, SecondArg newValue)
-            requires (!std::is_same_v<AccessorPolicy, NullSetterAccessorPolicy<T>>)
+            requires (!std::is_same_v<AccessorPolicy, AccessorPolicy_NullSetter<T>>)
         {
             if constexpr (std::is_rvalue_reference_v<SecondArg>)
             {
