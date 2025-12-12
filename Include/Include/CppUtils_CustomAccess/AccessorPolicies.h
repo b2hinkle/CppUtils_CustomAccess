@@ -102,6 +102,15 @@ namespace CppUtils::AccessorPolicies
     };
 }
 
+namespace CppUtils::AccessorPolicies
+{
+    template <auto UserCallablePtr>
+    using Get = CppUtils::AccessorPolicies::AccessorPolicy_GenericGetter<UserCallablePtr>;
+    
+    template <auto UserCallablePtr>
+    using Set = CppUtils::AccessorPolicies::AccessorPolicy_GenericSetter<UserCallablePtr>;
+}
+
 
 
 
