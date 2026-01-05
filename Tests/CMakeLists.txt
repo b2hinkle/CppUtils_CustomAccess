@@ -22,15 +22,12 @@ project(${MY_BASE_PROJECT_NAME_FULL}_Tests
 # even need to exist yet because CMake only validates the existence of targets at the end of the entire
 # configuration process.
 
-find_package(CppUtils_Misc CONFIG REQUIRED COMPONENTS Include)
-
 add_executable(CppUtils_CustomAccess_MyTest)
 target_compile_features(CppUtils_CustomAccess_MyTest PUBLIC cxx_std_20)
 target_sources(CppUtils_CustomAccess_MyTest PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source/MyTest.cpp")
 target_link_libraries(CppUtils_CustomAccess_MyTest
   PRIVATE
     ${MY_BASE_PROJECT_NAME_NAMESPACE}::${MY_BASE_PROJECT_NAME_LEAFNAME}::Static
-    CppUtils::Misc::Include
   )
 
 add_test(NAME CppUtils.CustomAccess.MyTest
