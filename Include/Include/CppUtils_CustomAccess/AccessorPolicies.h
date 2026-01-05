@@ -3,7 +3,7 @@
 #pragma once
 
 #include <type_traits>
-#include <CppUtils_CustomAccess/FunctionTraits.h>
+#include <CppUtils_Misc/FunctionTraits.h>
 #include <CppUtils_CustomAccess/AccessorPolicyAndAccessorPolicyStaticInterfaceTraits_PrimaryTemplates.h>
 #include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.h>
 #include <CppUtils_CustomAccess/AccessorPolicyUtils.h>
