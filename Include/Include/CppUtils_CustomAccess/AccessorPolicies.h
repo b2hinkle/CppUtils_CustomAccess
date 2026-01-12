@@ -24,14 +24,14 @@ namespace CppUtils
     {
         static_assert(CppUtils::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
 
-        using UserCallablePtrTraits = CppUtils::FunctionPointerTraits<decltype(UserCallablePtr)>;
+        using UserCallableTraits = CppUtils::FunctionTraits<decltype(UserCallablePtr)>;
         
-        static_assert(std::tuple_size_v<typename UserCallablePtrTraits::ArgsTuple> == 1, "Callable must have 1 argument.");
+        static_assert(std::tuple_size_v<typename UserCallableTraits::ArgsTuple> == 1, "Callable must have 1 argument.");
 
-        using ReturnType = typename UserCallablePtrTraits::ReturnType;
-        using FirstArg = std::tuple_element_t<0, typename UserCallablePtrTraits::ArgsTuple>;
+        using ReturnType = typename UserCallableTraits::ReturnType;
+        using FirstArg = std::tuple_element_t<0, typename UserCallableTraits::ArgsTuple>;
 
-        //using ClassType  = UserCallablePtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
+        //using ClassType  = UserCallableTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
 
         /*
         * Inline to avoid unnecesary copy in the case of non-ref parameter.
@@ -64,14 +64,14 @@ namespace CppUtils
     {
         static_assert(CppUtils::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
 
-        using UserCallablePtrTraits = CppUtils::FunctionPointerTraits<decltype(UserCallablePtr)>;
+        using UserCallableTraits = CppUtils::FunctionTraits<decltype(UserCallablePtr)>;
         
-        static_assert(std::tuple_size_v<typename UserCallablePtrTraits::ArgsTuple> == 2, "Callable must have 2 arguments.");
+        static_assert(std::tuple_size_v<typename UserCallableTraits::ArgsTuple> == 2, "Callable must have 2 arguments.");
 
-        using FirstArg  = std::tuple_element_t<0, typename UserCallablePtrTraits::ArgsTuple>;
-        using SecondArg = std::tuple_element_t<1, typename UserCallablePtrTraits::ArgsTuple>;
+        using FirstArg  = std::tuple_element_t<0, typename UserCallableTraits::ArgsTuple>;
+        using SecondArg = std::tuple_element_t<1, typename UserCallableTraits::ArgsTuple>;
 
-        //using ClassType  = UserCallablePtrTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
+        //using ClassType  = UserCallableTraits::ClassType; TODO: Support member function pointers so that we can support the outer object's functions.
 
         /*
         * 

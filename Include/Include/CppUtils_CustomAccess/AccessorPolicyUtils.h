@@ -11,7 +11,7 @@ namespace CppUtils
     * A type which is callable.
     */
     template <auto T>
-    concept TCallable = requires { typename FunctionPointerTraits<decltype(T)>; };
+    concept TCallable = requires { typename FunctionTraits<decltype(T)>; };
 
     template <class TFunction, class... TArgs>
     consteval bool IsRefReturnType()
