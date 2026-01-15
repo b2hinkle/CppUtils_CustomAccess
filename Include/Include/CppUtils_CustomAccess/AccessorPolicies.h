@@ -6,7 +6,8 @@
 #include <CppUtils_Misc/FunctionTraits.h>
 #include <CppUtils_CustomAccess/AccessorPolicyAndAccessorPolicyStaticInterfaceTraits_PrimaryTemplates.h>
 #include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.h>
-#include <CppUtils_CustomAccess/AccessorPolicyUtils.h>
+#include <CppUtils_Misc/TypeTraits.h>
+#include <CppUtils_Misc/Concepts.h>
 
 /*
 * Accessor policies are used to define custom accessor behavior (e.g. getters/setters). Must specialize a `AccessorPolicyTraits` with its static interface `AccessorPolicyStaticInterface_t` for it to be findable by `CustomAccessed`.

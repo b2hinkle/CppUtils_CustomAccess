@@ -102,7 +102,6 @@ block(SCOPE_FOR VARIABLES)
     "CppUtils_CustomAccess/AccessorPolicies.cpp"
     "CppUtils_CustomAccess/FindAccessorPolicy.cpp"
     "CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.cpp"
-    "CppUtils_CustomAccess/AccessorPolicyUtils.cpp"
     "CppUtils_CustomAccess/AccessorPolicy_NullGetter.cpp"
     "CppUtils_CustomAccess/AccessorPolicy_NullSetter.cpp"
     "CppUtils_CustomAccess/AccessorPolicyAndAccessorPolicyStaticInterfaceTraits_PrimaryTemplates.cpp"
