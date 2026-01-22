@@ -4,7 +4,8 @@
 
 #include <type_traits>
 #include <CppUtils_Misc/FunctionTraits.h>
-#include <CppUtils_CustomAccess/AccessorPolicyAndAccessorPolicyStaticInterfaceTraits_PrimaryTemplates.h>
+#include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaceTraits_PrimaryTemplates.h>
+#include <CppUtils_CustomAccess/AccessorPolicyTraits_PrimaryTemplates.h>
 #include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.h>
 #include <CppUtils_Misc/TypeTraits.h>
 #include <CppUtils_Misc/Concepts.h>

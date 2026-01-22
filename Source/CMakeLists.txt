@@ -104,7 +104,8 @@ block(SCOPE_FOR VARIABLES)
     "CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.cpp"
     "CppUtils_CustomAccess/AccessorPolicy_NullGetter.cpp"
     "CppUtils_CustomAccess/AccessorPolicy_NullSetter.cpp"
-    "CppUtils_CustomAccess/AccessorPolicyAndAccessorPolicyStaticInterfaceTraits_PrimaryTemplates.cpp"
+    "CppUtils_CustomAccess/AccessorPolicyStaticInterfaceTraits_PrimaryTemplates.cpp"
+    "CppUtils_CustomAccess/AccessorPolicyTraits_PrimaryTemplates.cpp"
     )
 
   # Add source file paths for `BUILD_LOCAL_INTERFACE` users.
