@@ -26,9 +26,9 @@ namespace CppUtils
     {
         static_assert(CppUtils::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
 
-        using UserCallableTraits = CppUtils::FunctionTraits<decltype(UserCallablePtr)>;
+        using UserCallableTraits = CppUtils::FunctionPtrTraits<UserCallablePtr>;
         
-        static_assert(std::tuple_size_v<typename UserCallableTraits::ArgsTuple> == 1, "Callable must have 1 argument.");
+        static_assert(UserCallableTraits::GetArgsCount() == 1, "Callable must have 1 argument.");
 
         using ReturnType = typename UserCallableTraits::ReturnType;
         using FirstArg = std::tuple_element_t<0, typename UserCallableTraits::ArgsTuple>;
@@ -66,9 +66,9 @@ namespace CppUtils
     {
         static_assert(CppUtils::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
 
-        using UserCallableTraits = CppUtils::FunctionTraits<decltype(UserCallablePtr)>;
+        using UserCallableTraits = CppUtils::FunctionPtrTraits<UserCallablePtr>;
         
-        static_assert(std::tuple_size_v<typename UserCallableTraits::ArgsTuple> == 2, "Callable must have 2 arguments.");
+        static_assert(UserCallableTraits::GetArgsCount() == 2, "Callable must have 2 arguments.");
 
         using FirstArg  = std::tuple_element_t<0, typename UserCallableTraits::ArgsTuple>;
         using SecondArg = std::tuple_element_t<1, typename UserCallableTraits::ArgsTuple>;
