@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <CppUtils_CustomAccess/AccessorPolicy_NullGetter.h>
 #include <CppUtils_CustomAccess/AccessorPolicy_NullSetter.h>
-#include <CppUtils_Misc/TypeTraits.h>
+#include <CppUtils/Misc/TypeTraits.h>
 
 
 

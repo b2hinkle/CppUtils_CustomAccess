@@ -3,12 +3,12 @@
 #pragma once
 
 #include <type_traits>
-#include <CppUtils_Misc/FunctionTraits.h>
+#include <CppUtils/Misc/FunctionTraits.h>
 #include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaceTraits_PrimaryTemplates.h>
 #include <CppUtils_CustomAccess/AccessorPolicyTraits_PrimaryTemplates.h>
 #include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.h>
-#include <CppUtils_Misc/TypeTraits.h>
-#include <CppUtils_Misc/Concepts.h>
+#include <CppUtils/Misc/TypeTraits.h>
+#include <CppUtils/Misc/Concepts.h>
 
 /*
 * Accessor policies are used to define custom accessor behavior (e.g. getters/setters). Must specialize a `AccessorPolicyTraits` with its static interface `AccessorPolicyStaticInterface_t` for it to be findable by `CustomAccessed`.

@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <CppUtils_CustomAccess/AccessorPolicies.h>
 #include <CppUtils_CustomAccess/FindAccessorPolicy.h>
-#include <CppUtils_Misc/TypeTraits.h>
+#include <CppUtils/Misc/TypeTraits.h>
 
 
 namespace CppUtils
