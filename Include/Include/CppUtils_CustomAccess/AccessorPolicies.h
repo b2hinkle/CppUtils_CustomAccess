@@ -20,12 +20,10 @@ namespace CppUtils
     */
     template
     <
-        auto UserCallablePtr
+        TCallable auto UserCallablePtr
     >
     struct AccessorPolicy_GenericGetter
     {
-        static_assert(IsCallable<UserCallablePtr>(), "We expect a user defined callable pointer as the non-type template argument.");
-
         using UserCallableTraits = CppUtils::FunctionPtrTraits<UserCallablePtr>;
         
         static_assert(UserCallableTraits::GetArgsCount() == 1, "Callable must have 1 argument.");
@@ -48,7 +46,7 @@ namespace CppUtils
     template
     <
         class T,
-        auto UserCallablePtr
+        TCallable auto UserCallablePtr
     >
     struct AccessorPolicyTraits<T, AccessorPolicy_GenericGetter<UserCallablePtr>>
     {
@@ -60,12 +58,10 @@ namespace CppUtils
     */
     template
     <
-        auto UserCallablePtr // TODO: We should make this variatic so user can define both copy and move. Only 2 possible args, but variatic for order agnostic.
+        TCallable auto UserCallablePtr // TODO: We should make this variatic so user can define both copy and move. Only 2 possible args, but variatic for order agnostic.
     >
     struct AccessorPolicy_GenericSetter
     {
-        static_assert(IsCallable<UserCallablePtr>(), "We expect a user defined callable pointer as the non-type template argument.");
-
         using UserCallableTraits = CppUtils::FunctionPtrTraits<UserCallablePtr>;
         
         static_assert(UserCallableTraits::GetArgsCount() == 2, "Callable must have 2 arguments.");
@@ -96,7 +92,7 @@ namespace CppUtils
     template
     <
         class T,
-        auto UserCallablePtr
+        TCallable auto UserCallablePtr
     >
     struct AccessorPolicyTraits<T, AccessorPolicy_GenericSetter<UserCallablePtr>>
     {
