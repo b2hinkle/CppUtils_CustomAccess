@@ -24,7 +24,7 @@ namespace CppUtils
     >
     struct AccessorPolicy_GenericGetter
     {
-        static_assert(CppUtils::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
+        static_assert(IsCallable<UserCallablePtr>(), "We expect a user defined callable pointer as the non-type template argument.");
 
         using UserCallableTraits = CppUtils::FunctionPtrTraits<UserCallablePtr>;
         
@@ -64,7 +64,7 @@ namespace CppUtils
     >
     struct AccessorPolicy_GenericSetter
     {
-        static_assert(CppUtils::TCallable<UserCallablePtr>, "We expect a user defined callable pointer as the non-type template argument.");
+        static_assert(IsCallable<UserCallablePtr>(), "We expect a user defined callable pointer as the non-type template argument.");
 
         using UserCallableTraits = CppUtils::FunctionPtrTraits<UserCallablePtr>;
         
