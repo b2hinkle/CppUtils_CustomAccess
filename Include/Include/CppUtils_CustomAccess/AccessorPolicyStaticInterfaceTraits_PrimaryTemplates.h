@@ -3,9 +3,11 @@
 #pragma once
 
 #include <CppUtils_CustomAccess/AccessorPolicyStaticInterfaces.h>
-#include <CppUtils_CustomAccess/AccessorPolicy_NullGetter.h>
-#include <CppUtils_CustomAccess/AccessorPolicy_NullSetter.h>
+#include <CppUtils_CustomAccess/AccessorPolicy_Null.h>
 
+/*
+* NOTE: This only still exists in case we want traits for our interfaces, but we no longer technically need it as of now.
+*/
 namespace CppUtils
 {
     template
@@ -23,12 +25,12 @@ namespace CppUtils
     template <class T>
     struct AccessorPolicyStaticInterfaceTraits<T, AccessorPolicyStaticInterface_Getter>
     {
-        using FallbackAccessorPolicy = AccessorPolicy_NullGetter<T>;
+        
     };
 
     template <class T>
     struct AccessorPolicyStaticInterfaceTraits<T, AccessorPolicyStaticInterface_Setter>
     {
-        using FallbackAccessorPolicy = AccessorPolicy_NullSetter<T>;
+        
     };
 }

@@ -4,11 +4,21 @@
 
 #include <utility>
 #include <type_traits>
-#include <CppUtils_CustomAccess/AccessorPolicy_NullGetter.h>
-#include <CppUtils_CustomAccess/AccessorPolicy_NullSetter.h>
+#include <CppUtils_CustomAccess/AccessorPolicy_Null.h>
 #include <CppUtils/Misc/TypeTraits.h>
 
-
+namespace CppUtils
+{
+    template
+    <
+        class T,
+        class AccessorPolicy
+    >
+    struct AccessorPolicyStaticInterface_Null
+        : AccessorPolicy
+    {
+    };
+}
 
 /*
 * 
@@ -24,6 +34,7 @@ namespace CppUtils
         class AccessorPolicy
     >
     struct AccessorPolicyStaticInterface_Getter
+        : AccessorPolicy
     {
         static_assert ( requires { typename AccessorPolicy::ReturnType; }, "The accessor policy must provide a using declaration for the return type.");
         static_assert ( requires { typename AccessorPolicy::FirstArg; },   "The accessor policy must provide a using declaration for the first parameter type.");
@@ -57,12 +68,6 @@ namespace CppUtils
             !std::is_rvalue_reference_v<FirstArg>,
             "First parameter should not be an rvalue reference. It does not make sense to steal the data of the backing value through a getter, nor does it make sense to prefer a const rvalue ref over a const lvalue ref."
             );
-
-        static inline ReturnType Get(FirstArg value)
-            requires (!std::is_same_v<AccessorPolicy, AccessorPolicy_NullGetter<T>>)
-        {
-            return AccessorPolicy::Get(value);
-        }
     };
 
     /*
@@ -74,6 +79,7 @@ namespace CppUtils
         class AccessorPolicy
     >
     struct AccessorPolicyStaticInterface_Setter
+        : AccessorPolicy
     {
         static_assert ( requires { typename AccessorPolicy::FirstArg; },  "The accessor policy must provide a using declaration for the first parameter type.");
         static_assert ( requires { typename AccessorPolicy::SecondArg; }, "The accessor policy must provide a using declaration for the second parameter type.");
@@ -114,29 +120,6 @@ namespace CppUtils
         >,
         "Second parameter value type must match the value type of the encapsulated data, since it's used for setting the encapsulated data. Note that cv and ref qualifiers don't impact value type.");
 
-        
-
-
-        
-
         static_assert(std::is_invocable_v<decltype(AccessorPolicy::Set), FirstArg, SecondArg>, "The policy class is missing its set function.");
-        
-        /*
-        * 
-        */
-        static inline void Set(FirstArg value, SecondArg newValue)
-            requires (!std::is_same_v<AccessorPolicy, AccessorPolicy_NullSetter<T>>)
-        {
-            if constexpr (std::is_rvalue_reference_v<SecondArg>)
-            {
-                // Non-const rvalue reference. Non-const because that's already been asserted.
-                AccessorPolicy::Set(value, std::move(newValue));
-            }
-            else
-            {
-                // Either const lvalue reference or const/non-const copy.
-                AccessorPolicy::Set(value, newValue);
-            }
-        }
     };
 }

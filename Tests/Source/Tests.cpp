@@ -2,27 +2,10 @@
 
 #include <CppUtils_CustomAccess/CustomAccessed.h>
 
-const int& Getv(const int& value)
-{
-    return value;
-}
-
-struct MyStruct_StaticTest
-{
-    static const int& Getv(const int& value)
-    {
-        return value;
-    }
-};
-
-struct MyStruct_InstanceTest
-{
-    const int& Getv(const int& value)
-    {
-        return value;
-    }
-};
-
+/*
+* [todo] This file is more of a developer sandbox at this point rather then concrete tests.
+*        Take time to create proper tests.
+*/
 int main(int argc, char** argv)
 {
     //MyStruct_InstanceTest instance;

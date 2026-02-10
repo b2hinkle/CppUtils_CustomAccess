@@ -62,7 +62,7 @@ namespace CppUtils::AccessorPolicyUtils::Detail
     >
     struct FindAccessorPolicy<T, AccessorPolicyStaticInterface>
     {
-        using AccessorPolicy = AccessorPolicyStaticInterfaceTraits<T, AccessorPolicyStaticInterface>::FallbackAccessorPolicy;
+        using AccessorPolicy = AccessorPolicy_Null;
     };
 }
 
@@ -81,18 +81,24 @@ namespace CppUtils::AccessorPolicyUtils
     using GetAccessorPolicyByStaticInterface = Detail::FindAccessorPolicy<T, AccessorPolicyStaticInterface, AccessorPolicies...>::AccessorPolicy;
 
     /*
-    * Builds the static interface for dispatching calls to the correct accessor policy in `AccessorPolicies...`.
+    * Completes the type for the given static interface, which provides the correct behavior for `CustomAccessed`.
     */
     template
     <
-        class T,
         template <class, class>
         class AccessorPolicyStaticInterface,
+        class T,
         class... AccessorPolicies
     >
-    using BuildAccessorPolicyStaticInterface = AccessorPolicyStaticInterface
-    <
-        T,
-        GetAccessorPolicyByStaticInterface<T, AccessorPolicyStaticInterface, AccessorPolicies...>
-    >;
+    struct CompleteAccessorPolicyStaticInterface
+    {
+        using AccessorPolicy = GetAccessorPolicyByStaticInterface<T, AccessorPolicyStaticInterface, AccessorPolicies...>;
+
+        using type = std::conditional_t
+        <
+            std::is_same_v<AccessorPolicy, AccessorPolicy_Null>,
+            AccessorPolicyStaticInterface_Null<T, AccessorPolicy_Null>,
+            AccessorPolicyStaticInterface<T, AccessorPolicy>
+        >;
+    };
 }
